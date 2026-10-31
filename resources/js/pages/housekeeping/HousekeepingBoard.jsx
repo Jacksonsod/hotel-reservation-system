@@ -37,7 +37,7 @@ import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import { useAuth } from '../../context/AuthContext';
 import KpiCard from '../../components/common/KpiCard';
 import StatusChip from '../../components/common/StatusChip';
@@ -89,9 +89,9 @@ const HousekeepingBoard = () => {
         const fetchDependencies = async () => {
             try {
                 const [hRes, sRes, rRes] = await Promise.all([
-                    axios.get('/api/v1/hotels'),
-                    axios.get('/api/v1/housekeeping/staff'),
-                    axios.get('/api/v1/rooms'),
+                    axiosClient.get('/hotels'),
+                    axiosClient.get('/housekeeping/staff'),
+                    axiosClient.get('/rooms'),
                 ]);
                 if (hRes.data.success) {
                     setHotels(hRes.data.data.data || hRes.data.data || []);
@@ -120,7 +120,7 @@ const HousekeepingBoard = () => {
             if (selectedAssignee !== 'all') params.assigned_to = selectedAssignee;
             if (searchTerm.trim()) params.search = searchTerm.trim();
 
-            const res = await axios.get('/api/v1/housekeeping/tasks', { params });
+            const res = await axiosClient.get('/housekeeping/tasks', { params });
             if (res.data.success) {
                 setTasks(res.data.data.data || []);
                 if (res.data.meta?.kpis) {
@@ -142,7 +142,7 @@ const HousekeepingBoard = () => {
     const handleTransitionStatus = async (task, newStatus) => {
         setErrorMsg('');
         try {
-            const res = await axios.patch(`/api/v1/housekeeping/tasks/${task.task_id}/status`, {
+            const res = await axiosClient.patch(`/housekeeping/tasks/${task.task_id}/status`, {
                 task_status: newStatus,
             });
             if (res.data.success) {
@@ -159,7 +159,7 @@ const HousekeepingBoard = () => {
         setIsSubmittingTask(true);
         setErrorMsg('');
         try {
-            const res = await axios.post('/api/v1/housekeeping/tasks', {
+            const res = await axiosClient.post('/housekeeping/tasks', {
                 room_id: assignRoomId,
                 assigned_to: assignStaffId,
                 task_description: taskDesc.trim(),
@@ -183,7 +183,7 @@ const HousekeepingBoard = () => {
         setIsSubmittingMaint(true);
         setErrorMsg('');
         try {
-            const res = await axios.post('/api/v1/maintenance', {
+            const res = await axiosClient.post('/maintenance', {
                 room_id: maintRoomId,
                 issue_description: maintDesc.trim(),
                 priority: maintPriority,
@@ -205,7 +205,7 @@ const HousekeepingBoard = () => {
     const handleDeleteTask = async (taskId) => {
         if (!window.confirm('Are you sure you want to delete this cleaning task?')) return;
         try {
-            const res = await axios.delete(`/api/v1/housekeeping/tasks/${taskId}`);
+            const res = await axiosClient.delete(`/housekeeping/tasks/${taskId}`);
             if (res.data.success) {
                 setSuccessMsg('Task deleted successfully.');
                 fetchTasks();

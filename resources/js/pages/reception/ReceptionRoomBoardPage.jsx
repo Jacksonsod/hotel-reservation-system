@@ -31,7 +31,7 @@ import CleaningServicesOutlinedIcon from '@mui/icons-material/CleaningServicesOu
 import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import StatusChip from '../../components/common/StatusChip';
 
 const ReceptionRoomBoardPage = () => {
@@ -58,8 +58,8 @@ const ReceptionRoomBoardPage = () => {
         const fetchFilters = async () => {
             try {
                 const [hRes, tRes] = await Promise.all([
-                    axios.get('/api/v1/hotels'),
-                    axios.get('/api/v1/room-types'),
+                    axiosClient.get('/hotels'),
+                    axiosClient.get('/room-types'),
                 ]);
                 if (hRes.data.success) {
                     setHotels(hRes.data.data.data || hRes.data.data || []);
@@ -84,7 +84,7 @@ const ReceptionRoomBoardPage = () => {
             if (selectedStatus !== 'all') params.status = selectedStatus;
             if (searchTerm.trim()) params.search = searchTerm.trim();
 
-            const res = await axios.get('/api/v1/rooms', { params });
+            const res = await axiosClient.get('/rooms', { params });
             if (res.data.success) {
                 setRooms(res.data.data.data || res.data.data || []);
             }

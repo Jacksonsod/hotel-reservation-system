@@ -34,7 +34,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import StatusChip from '../../components/common/StatusChip';
 
 const ServiceOrdersPage = () => {
@@ -66,7 +66,7 @@ const ServiceOrdersPage = () => {
         setSuccessMsg('');
 
         try {
-            const res = await axios.get(`/api/v1/reception/lookup/${encodeURIComponent(queryCode)}`);
+            const res = await axiosClient.get(`/reception/lookup/${encodeURIComponent(queryCode)}`);
             if (res.data.success) {
                 const resData = res.data.data.reservation;
                 setReservation(resData);
@@ -74,7 +74,7 @@ const ServiceOrdersPage = () => {
 
                 // Load available services for this hotel branch
                 if (resData.room?.hotel_id) {
-                    const servicesRes = await axios.get('/api/v1/services', {
+                    const servicesRes = await axiosClient.get('/services', {
                         params: { hotel_id: resData.room.hotel_id, status: 'active' },
                     });
                     if (servicesRes.data.success) {
@@ -104,7 +104,7 @@ const ServiceOrdersPage = () => {
         setSubmittingOrder(true);
         setErrorMsg('');
         try {
-            const res = await axios.post(`/api/v1/reservations/${reservation.reservation_id}/services`, {
+            const res = await axiosClient.post(`/reservations/${reservation.reservation_id}/services`, {
                 service_id: selectedServiceId,
                 quantity: Number(quantity),
             });
@@ -126,7 +126,7 @@ const ServiceOrdersPage = () => {
         if (!window.confirm('Are you sure you want to remove this service charge from the folio?')) return;
         setErrorMsg('');
         try {
-            const res = await axios.delete(`/api/v1/service-orders/${orderId}`);
+            const res = await axiosClient.delete(`/service-orders/${orderId}`);
             if (res.data.success) {
                 setSuccessMsg(res.data.message || 'Service order removed from folio.');
                 fetchReservationFolio(reservation.confirmation_code);

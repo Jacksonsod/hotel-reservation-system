@@ -42,7 +42,7 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import CleaningServicesOutlinedIcon from '@mui/icons-material/CleaningServicesOutlined';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import KpiCard from '../../components/common/KpiCard';
 import StatusChip from '../../components/common/StatusChip';
 
@@ -82,7 +82,7 @@ const ReceptionDashboard = () => {
     useEffect(() => {
         const fetchHotels = async () => {
             try {
-                const res = await axios.get('/api/v1/hotels');
+                const res = await axiosClient.get('/hotels');
                 if (res.data.success) {
                     setHotels(res.data.data.data || res.data.data || []);
                 }
@@ -99,7 +99,7 @@ const ReceptionDashboard = () => {
         setErrorMsg('');
         try {
             const params = selectedHotel !== 'all' ? { hotel_id: selectedHotel } : {};
-            const res = await axios.get('/api/v1/reception/dashboard', { params });
+            const res = await axiosClient.get('/reception/dashboard', { params });
             if (res.data.success) {
                 setData(res.data.data);
             }
@@ -125,7 +125,7 @@ const ReceptionDashboard = () => {
         setIsSubmittingCheckout(true);
         setErrorMsg('');
         try {
-            const res = await axios.post(`/api/v1/reservations/${selectedReservation.reservation_id}/checkout`, {
+            const res = await axiosClient.post(`/reservations/${selectedReservation.reservation_id}/checkout`, {
                 payment_method: paymentMethod,
             });
             if (res.data.success) {

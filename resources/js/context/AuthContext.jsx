@@ -21,11 +21,16 @@ export const getRoleHomeRoute = (role) => {
 };
 
 export const AuthProvider = ({ children }) => {
+    const [token, setToken] = useState(() => localStorage.getItem('authToken'));
     const [user, setUser] = useState(() => {
+        const storedToken = localStorage.getItem('authToken');
+        if (!storedToken) {
+            localStorage.removeItem('authUser');
+            return null;
+        }
         const cached = localStorage.getItem('authUser');
         return cached ? JSON.parse(cached) : null;
     });
-    const [token, setToken] = useState(() => localStorage.getItem('authToken'));
     const [loading, setLoading] = useState(true);
     const [selectedBranchId, setSelectedBranchId] = useState('all');
 
@@ -36,9 +41,15 @@ export const AuthProvider = ({ children }) => {
                 const refreshed = res.data.data.user;
                 setUser(refreshed);
                 localStorage.setItem('authUser', JSON.stringify(refreshed));
+            } else {
+                throw new Error('Invalid user session');
             }
         } catch (err) {
-            console.error('Failed to refresh user', err);
+            console.warn('Failed to verify user session; clearing credentials', err);
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
         }
     };
 
@@ -46,6 +57,9 @@ export const AuthProvider = ({ children }) => {
         const verifyAuth = async () => {
             if (token) {
                 await refreshUser();
+            } else {
+                setUser(null);
+                localStorage.removeItem('authUser');
             }
             setLoading(false);
         };

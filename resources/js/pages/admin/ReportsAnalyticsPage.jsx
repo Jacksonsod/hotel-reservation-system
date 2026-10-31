@@ -47,7 +47,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import KpiCard from '../../components/common/KpiCard';
 import { RECHARTS_COLORS } from '../../theme/theme';
 
@@ -74,7 +74,7 @@ const ReportsAnalyticsPage = () => {
     useEffect(() => {
         const fetchHotels = async () => {
             try {
-                const res = await axios.get('/api/v1/hotels');
+                const res = await axiosClient.get('/hotels');
                 if (res.data.success) {
                     setHotels(res.data.data.data || res.data.data || []);
                 }
@@ -95,7 +95,7 @@ const ReportsAnalyticsPage = () => {
             if (startDate) params.start_date = startDate;
             if (endDate) params.end_date = endDate;
 
-            const res = await axios.get('/api/v1/reports/analytics', { params });
+            const res = await axiosClient.get('/reports/analytics', { params });
             if (res.data.success) {
                 setAnalytics(res.data.data);
             }

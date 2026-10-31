@@ -7,14 +7,14 @@ import { useAuth } from '../../context/AuthContext';
 
 const AppShell = () => {
     const theme = useTheme();
-    const { user, loading } = useAuth();
+    const { user, token, loading } = useAuth();
     const [mobileOpen, setMobileOpen] = useState(false);
 
     if (loading) {
         return null;
     }
 
-    if (!user) {
+    if (!user || !token) {
         return <Navigate to="/login" replace />;
     }
 

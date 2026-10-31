@@ -35,7 +35,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import { useAuth } from '../../context/AuthContext';
 import KpiCard from '../../components/common/KpiCard';
 import StatusChip from '../../components/common/StatusChip';
@@ -79,8 +79,8 @@ const MaintenanceRequestsPage = () => {
         const fetchDependencies = async () => {
             try {
                 const [hRes, rRes] = await Promise.all([
-                    axios.get('/api/v1/hotels'),
-                    axios.get('/api/v1/rooms'),
+                    axiosClient.get('/hotels'),
+                    axiosClient.get('/rooms'),
                 ]);
                 if (hRes.data.success) {
                     setHotels(hRes.data.data.data || hRes.data.data || []);
@@ -106,7 +106,7 @@ const MaintenanceRequestsPage = () => {
             if (selectedStatus !== 'all') params.maintenance_status = selectedStatus;
             if (searchTerm.trim()) params.search = searchTerm.trim();
 
-            const res = await axios.get('/api/v1/maintenance', { params });
+            const res = await axiosClient.get('/maintenance', { params });
             if (res.data.success) {
                 setLogs(res.data.data.data || []);
                 if (res.data.meta?.kpis) {
@@ -127,7 +127,7 @@ const MaintenanceRequestsPage = () => {
     const handleUpdateStatus = async (log, newStatus) => {
         setErrorMsg('');
         try {
-            const res = await axios.patch(`/api/v1/maintenance/${log.maintenance_id}`, {
+            const res = await axiosClient.patch(`/maintenance/${log.maintenance_id}`, {
                 maintenance_status: newStatus,
             });
             if (res.data.success) {
@@ -144,7 +144,7 @@ const MaintenanceRequestsPage = () => {
         setIsSubmitting(true);
         setErrorMsg('');
         try {
-            const res = await axios.post('/api/v1/maintenance', {
+            const res = await axiosClient.post('/maintenance', {
                 room_id: roomId,
                 issue_description: issueDesc.trim(),
                 priority,
@@ -166,7 +166,7 @@ const MaintenanceRequestsPage = () => {
     const handleDeleteLog = async (logId) => {
         if (!window.confirm('Are you sure you want to delete this maintenance record?')) return;
         try {
-            const res = await axios.delete(`/api/v1/maintenance/${logId}`);
+            const res = await axiosClient.delete(`/maintenance/${logId}`);
             if (res.data.success) {
                 setSuccessMsg('Record deleted successfully.');
                 fetchLogs();

@@ -40,7 +40,7 @@ import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined';
 import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import KpiCard from '../../components/common/KpiCard';
 import StatusChip from '../../components/common/StatusChip';
 
@@ -92,7 +92,7 @@ const SecurityFraudAuditPage = () => {
             if (statusFilter !== 'all') params.review_status = statusFilter;
             if (fraudSearch.trim()) params.search = fraudSearch.trim();
 
-            const res = await axios.get('/api/v1/security/fraud-flags', { params });
+            const res = await axiosClient.get('/security/fraud-flags', { params });
             if (res.data.success) {
                 setFraudFlags(res.data.data || []);
                 if (res.data.meta?.kpis) {
@@ -111,7 +111,7 @@ const SecurityFraudAuditPage = () => {
             if (auditTableFilter !== 'all') params.target_table = auditTableFilter;
             if (auditSearch.trim()) params.search = auditSearch.trim();
 
-            const res = await axios.get('/api/v1/security/audit-logs', { params });
+            const res = await axiosClient.get('/security/audit-logs', { params });
             if (res.data.success) {
                 setAuditLogs(res.data.data || []);
                 if (res.data.meta?.kpis) {
@@ -151,7 +151,7 @@ const SecurityFraudAuditPage = () => {
         setIsUpdatingFlag(true);
         setErrorMsg('');
         try {
-            const res = await axios.patch(`/api/v1/security/fraud-flags/${selectedFlag.flag_id}`, {
+            const res = await axiosClient.patch(`/security/fraud-flags/${selectedFlag.flag_id}`, {
                 review_status: newReviewStatus,
                 suspend_user: suspendUser,
             });

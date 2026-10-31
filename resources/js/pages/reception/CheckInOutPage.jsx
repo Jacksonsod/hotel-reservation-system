@@ -38,7 +38,7 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import RoomServiceOutlinedIcon from '@mui/icons-material/RoomServiceOutlined';
 import HotelOutlinedIcon from '@mui/icons-material/HotelOutlined';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import StatusChip from '../../components/common/StatusChip';
 
 const CheckInOutPage = () => {
@@ -75,7 +75,7 @@ const CheckInOutPage = () => {
         setReservationData(null);
 
         try {
-            const res = await axios.get(`/api/v1/reception/lookup/${encodeURIComponent(code)}`);
+            const res = await axiosClient.get(`/reception/lookup/${encodeURIComponent(code)}`);
             if (res.data.success) {
                 const { reservation, alternative_available_rooms } = res.data.data;
                 setReservationData(reservation);
@@ -131,7 +131,7 @@ const CheckInOutPage = () => {
                 companion_guests: companionGuests,
             };
 
-            const res = await axios.post(`/api/v1/reservations/${reservationData.reservation_id}/check-in`, payload);
+            const res = await axiosClient.post(`/reservations/${reservationData.reservation_id}/check-in`, payload);
             if (res.data.success) {
                 setSuccessMsg(res.data.message || 'Guest checked in successfully!');
                 handleLookup(reservationData.confirmation_code);
@@ -150,7 +150,7 @@ const CheckInOutPage = () => {
         setSuccessMsg('');
 
         try {
-            const res = await axios.post(`/api/v1/reservations/${reservationData.reservation_id}/checkout`, {
+            const res = await axiosClient.post(`/reservations/${reservationData.reservation_id}/checkout`, {
                 payment_method: checkoutPaymentMethod,
             });
             if (res.data.success) {

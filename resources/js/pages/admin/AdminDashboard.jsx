@@ -54,7 +54,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import { useNavigate } from 'react-router-dom';
 import KpiCard from '../../components/common/KpiCard';
 import StatusChip from '../../components/common/StatusChip';
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         const fetchHotels = async () => {
             try {
-                const res = await axios.get('/api/v1/hotels');
+                const res = await axiosClient.get('/hotels');
                 if (res.data.success) {
                     setHotels(res.data.data.data || res.data.data || []);
                 }
@@ -107,8 +107,8 @@ const AdminDashboard = () => {
         try {
             const params = selectedHotel !== 'all' ? { hotel_id: selectedHotel } : {};
             const [analyticsRes, reservationsRes] = await Promise.all([
-                axios.get('/api/v1/reports/analytics', { params }),
-                axios.get('/api/v1/reservations', { params: { per_page: 5, ...params } }),
+                axiosClient.get('/reports/analytics', { params }),
+                axiosClient.get('/reservations', { params: { per_page: 5, ...params } }),
             ]);
 
             if (analyticsRes.data.success) {
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
         setIsBroadcasting(true);
         setErrorMsg('');
         try {
-            const res = await axios.post('/api/v1/notifications/broadcast-promo', {
+            const res = await axiosClient.post('/notifications/broadcast-promo', {
                 title: promoTitle.trim(),
                 message: promoMessage.trim(),
             });
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
         setSendingReminders(true);
         setErrorMsg('');
         try {
-            const res = await axios.post('/api/v1/notifications/send-reminders');
+            const res = await axiosClient.post('/notifications/send-reminders');
             if (res.data.success) {
                 setSuccessMsg(res.data.message || 'Stay reminders dispatched successfully.');
             }
