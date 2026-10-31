@@ -28,6 +28,15 @@ import ReservationsManagementPage from './pages/admin/ReservationsManagementPage
 import PaymentsInvoicesPage from './pages/admin/PaymentsInvoicesPage';
 import AdminReviewsPage from './pages/admin/AdminReviewsPage';
 
+// Phase 5 Reception, Housekeeping & Operations Pages
+import ReceptionDashboard from './pages/reception/ReceptionDashboard';
+import CheckInOutPage from './pages/reception/CheckInOutPage';
+import ServiceOrdersPage from './pages/reception/ServiceOrdersPage';
+import ReceptionRoomBoardPage from './pages/reception/ReceptionRoomBoardPage';
+import HousekeepingBoard from './pages/housekeeping/HousekeepingBoard';
+import MaintenanceRequestsPage from './pages/housekeeping/MaintenanceRequestsPage';
+import AdminOperationsPage from './pages/admin/AdminOperationsPage';
+
 const RootRedirect = () => {
     const { user, loading, getRoleHomeRoute } = useAuth();
 
@@ -70,10 +79,7 @@ const App = () => {
                             <Route path="/admin/services" element={<ServicesAmenitiesPage />} />
                             <Route path="/admin/reservations" element={<ReservationsManagementPage />} />
                             <Route path="/admin/payments" element={<PaymentsInvoicesPage />} />
-                            <Route
-                                path="/admin/operations"
-                                element={<ModulePlaceholder title="Housekeeping & Maintenance" subtitle="Operational coordination between front desk, housekeeping, and engineering" phase="Phase 5" />}
-                            />
+                            <Route path="/admin/operations" element={<AdminOperationsPage />} />
                             <Route path="/admin/users" element={<UsersPage />} />
                             <Route path="/admin/reviews" element={<AdminReviewsPage />} />
                             <Route
@@ -86,42 +92,18 @@ const App = () => {
                             />
 
                             {/* Receptionist Routes */}
-                            <Route
-                                path="/reception/dashboard"
-                                element={<ModulePlaceholder title="Front Desk Dashboard" subtitle="Today arrivals, departures, room occupancy board, and urgent tasks" phase="Phase 4" />}
-                            />
-                            <Route
-                                path="/reception/check-in-out"
-                                element={<ModulePlaceholder title="Check-In & Check-Out" subtitle="Guest arrival registration, room key assignment, billing calculation, and checkout" phase="Phase 4" />}
-                            />
+                            <Route path="/reception/dashboard" element={<ReceptionDashboard />} />
+                            <Route path="/reception/check-in-out" element={<CheckInOutPage />} />
                             <Route path="/reception/reservations" element={<ReservationsManagementPage />} />
-                            <Route
-                                path="/reception/services"
-                                element={<ModulePlaceholder title="Guest Service Orders" subtitle="Post room service, shuttle, and tour charges directly to guest folios" phase="Phase 4" />}
-                            />
+                            <Route path="/reception/services" element={<ServiceOrdersPage />} />
                             <Route path="/reception/payments" element={<PaymentsInvoicesPage />} />
-                            <Route
-                                path="/reception/rooms"
-                                element={<ModulePlaceholder title="Room Availability Board" subtitle="Real-time visual room matrix across all floors and types" phase="Phase 4" />}
-                            />
-                            <Route
-                                path="/reception/maintenance"
-                                element={<ModulePlaceholder title="Report Maintenance" subtitle="Log urgent plumbing, HVAC, or electrical issues directly to technicians" phase="Phase 5" />}
-                            />
+                            <Route path="/reception/rooms" element={<ReceptionRoomBoardPage />} />
+                            <Route path="/reception/maintenance" element={<MaintenanceRequestsPage />} />
 
                             {/* Housekeeping Routes */}
-                            <Route
-                                path="/housekeeping/dashboard"
-                                element={<ModulePlaceholder title="Housekeeping Board" subtitle="Room cleanliness status board, turnover priorities, and task assignments" phase="Phase 5" />}
-                            />
-                            <Route
-                                path="/housekeeping/tasks"
-                                element={<ModulePlaceholder title="My Cleaning Tasks" subtitle="Assigned rooms for cleaning, inspection, and status updates" phase="Phase 5" />}
-                            />
-                            <Route
-                                path="/housekeeping/maintenance"
-                                element={<ModulePlaceholder title="Maintenance Requests" subtitle="Report broken fixtures or equipment discovered during turnover" phase="Phase 5" />}
-                            />
+                            <Route path="/housekeeping/dashboard" element={<HousekeepingBoard />} />
+                            <Route path="/housekeeping/tasks" element={<HousekeepingBoard />} />
+                            <Route path="/housekeeping/maintenance" element={<MaintenanceRequestsPage />} />
 
                             {/* Guest Routes */}
                             <Route path="/guest/dashboard" element={<GuestDashboard />} />

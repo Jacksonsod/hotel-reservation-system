@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\Api\AmenityController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CheckInCheckoutController;
 use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\HousekeepingController;
+use App\Http\Controllers\Api\MaintenanceController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentInvoiceController;
 use App\Http\Controllers\Api\ReservationController;
@@ -81,6 +84,37 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/loyalty', [ReviewLoyaltyController::class, 'getLoyalty']);
     Route::get('/reviews', [ReviewLoyaltyController::class, 'getReviews']);
     Route::post('/reviews', [ReviewLoyaltyController::class, 'storeReview']);
+
+    // Phase 5: Reception & Front Desk (admin, receptionist)
+    Route::middleware('role:admin,receptionist')->group(function () {
+        Route::get('/reception/dashboard', [CheckInCheckoutController::class, 'dashboard']);
+        Route::get('/reception/lookup/{confirmationCode}', [CheckInCheckoutController::class, 'lookup']);
+        Route::post('/reservations/{reservation}/check-in', [CheckInCheckoutController::class, 'checkIn']);
+        Route::post('/reservations/{reservation}/checkout', [CheckInCheckoutController::class, 'checkout']);
+        Route::get('/reservations/{reservation}/services', [CheckInCheckoutController::class, 'getServiceOrders']);
+        Route::post('/reservations/{reservation}/services', [CheckInCheckoutController::class, 'storeServiceOrder']);
+        Route::delete('/service-orders/{order}', [CheckInCheckoutController::class, 'deleteServiceOrder']);
+    });
+
+    // Phase 5: Housekeeping & Maintenance (admin, receptionist, housekeeping)
+    Route::middleware('role:admin,receptionist,housekeeping')->group(function () {
+        // Housekeeping Tasks
+        Route::get('/housekeeping/tasks', [HousekeepingController::class, 'index']);
+        Route::get('/housekeeping/staff', [HousekeepingController::class, 'getStaff']);
+        Route::post('/housekeeping/tasks', [HousekeepingController::class, 'store']);
+        Route::get('/housekeeping/tasks/{task}', [HousekeepingController::class, 'show']);
+        Route::patch('/housekeeping/tasks/{task}/status', [HousekeepingController::class, 'updateStatus']);
+        Route::put('/housekeeping/tasks/{task}', [HousekeepingController::class, 'update']);
+        Route::delete('/housekeeping/tasks/{task}', [HousekeepingController::class, 'destroy']);
+
+        // Maintenance Logs
+        Route::get('/maintenance', [MaintenanceController::class, 'index']);
+        Route::post('/maintenance', [MaintenanceController::class, 'store']);
+        Route::get('/maintenance/{maintenance}', [MaintenanceController::class, 'show']);
+        Route::put('/maintenance/{maintenance}', [MaintenanceController::class, 'update']);
+        Route::patch('/maintenance/{maintenance}', [MaintenanceController::class, 'update']);
+        Route::delete('/maintenance/{maintenance}', [MaintenanceController::class, 'destroy']);
+    });
 
     // Admin Role-Protected Management Routes
     Route::middleware('role:admin')->group(function () {
