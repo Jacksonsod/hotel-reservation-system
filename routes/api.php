@@ -8,10 +8,12 @@ use App\Http\Controllers\Api\HousekeepingController;
 use App\Http\Controllers\Api\MaintenanceController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentInvoiceController;
+use App\Http\Controllers\Api\ReportAnalyticsController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\ReviewLoyaltyController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\RoomTypeController;
+use App\Http\Controllers\Api\SecurityAuditController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reservations/{reservation}/services', [CheckInCheckoutController::class, 'getServiceOrders']);
         Route::post('/reservations/{reservation}/services', [CheckInCheckoutController::class, 'storeServiceOrder']);
         Route::delete('/service-orders/{order}', [CheckInCheckoutController::class, 'deleteServiceOrder']);
+        Route::post('/notifications/send-reminders', [NotificationController::class, 'sendReminders']);
     });
 
     // Phase 5: Housekeeping & Maintenance (admin, receptionist, housekeeping)
@@ -157,5 +160,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+        // Security, Fraud Alerts & Audit Logs
+        Route::get('/security/audit-logs', [SecurityAuditController::class, 'auditLogs']);
+        Route::get('/security/fraud-flags', [SecurityAuditController::class, 'fraudFlags']);
+        Route::patch('/security/fraud-flags/{flag}', [SecurityAuditController::class, 'updateFraudFlag']);
+        Route::post('/notifications/broadcast-promo', [SecurityAuditController::class, 'broadcastPromo']);
+
+        // Reports & Analytics Engine
+        Route::get('/reports/analytics', [ReportAnalyticsController::class, 'analytics']);
+        Route::get('/reports/export/pdf', [ReportAnalyticsController::class, 'exportPdf']);
+        Route::get('/reports/export/csv', [ReportAnalyticsController::class, 'exportCsv']);
     });
 });
