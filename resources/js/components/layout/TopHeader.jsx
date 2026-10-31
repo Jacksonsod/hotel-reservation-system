@@ -51,11 +51,28 @@ const TopHeader = ({ onToggleMobileSidebar }) => {
     const [profileAnchor, setProfileAnchor] = useState(null);
 
     // Hotel branches for context filter
+    const [branches, setBranches] = useState([]);
+
+    const fetchBranches = async () => {
+        try {
+            const res = await axiosClient.get('/hotels');
+            if (res.data?.success && Array.isArray(res.data?.data)) {
+                setBranches(res.data.data.map((h) => ({ id: h.hotel_id, name: h.name })));
+            }
+        } catch (err) {
+            console.error('Failed to load branches', err);
+        }
+    };
+
+    useEffect(() => {
+        if (user?.role === 'admin') {
+            fetchBranches();
+        }
+    }, [user]);
+
     const hotelBranches = [
         { id: 'all', name: t('nav.allBranches') },
-        { id: 1, name: 'RP Karongi Lake Resort' },
-        { id: 2, name: 'Kigali Grand Convention Hotel' },
-        { id: 3, name: 'Rubavu Waterfront Palms' },
+        ...branches,
     ];
 
     const fetchNotifications = async () => {

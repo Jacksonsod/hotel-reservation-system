@@ -14,19 +14,19 @@ export const STATUS_CHIP_COLORS = {
         solid: '#10B981',
         light: { bg: '#D1FAE5', text: '#065F46' },
         dark: { bg: '#064E3B', text: '#6EE7B7' },
-        statuses: ['available', 'clean', 'paid', 'confirmed', 'completed', 'resolved', 'low', 'active'],
+        statuses: ['available', 'clean', 'paid', 'confirmed', 'completed', 'resolved', 'low', 'active', 'housekeeping'],
     },
     warning: {
         solid: '#F59E0B',
         light: { bg: '#FEF3C7', text: '#92400E' },
         dark: { bg: '#78350F', text: '#FCD34D' },
-        statuses: ['reserved', 'pending', 'cleaning', 'partially_paid', 'in_progress', 'medium'],
+        statuses: ['reserved', 'pending', 'cleaning', 'partially_paid', 'in_progress', 'medium', 'admin'],
     },
     info: {
         solid: '#3B82F6',
         light: { bg: '#DBEAFE', text: '#1E40AF' },
         dark: { bg: '#1E3A8A', text: '#93C5FD' },
-        statuses: ['occupied', 'checked_in', 'assigned'],
+        statuses: ['occupied', 'checked_in', 'assigned', 'receptionist'],
     },
     error: {
         solid: '#EF4444',
@@ -38,7 +38,7 @@ export const STATUS_CHIP_COLORS = {
         solid: '#64748B',
         light: { bg: '#F1F5F9', text: '#334155' },
         dark: { bg: '#334155', text: '#CBD5E1' },
-        statuses: ['checked_out', 'inactive', 'deactivated', 'dismissed', 'reviewed'],
+        statuses: ['checked_out', 'inactive', 'deactivated', 'dismissed', 'reviewed', 'guest'],
     },
 };
 

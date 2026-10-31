@@ -11,6 +11,12 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import ModulePlaceholder from './pages/placeholder/ModulePlaceholder';
 
+// Phase 3 Admin Core Modules
+import HotelsPage from './pages/admin/HotelsPage';
+import RoomsPage from './pages/admin/RoomsPage';
+import ServicesAmenitiesPage from './pages/admin/ServicesAmenitiesPage';
+import UsersPage from './pages/admin/UsersPage';
+
 const RootRedirect = () => {
     const { user, loading, getRoleHomeRoute } = useAuth();
 
@@ -48,18 +54,9 @@ const App = () => {
                                 path="/admin/dashboard"
                                 element={<ModulePlaceholder title="Executive Dashboard" subtitle="Real-time multi-branch revenue, occupancy rates, and operational KPIs" phase="Phase 5" />}
                             />
-                            <Route
-                                path="/admin/hotels"
-                                element={<ModulePlaceholder title="Hotel Branches" subtitle="Manage Karongi, Kigali, and Rubavu properties, contacts, and images" phase="Phase 3" />}
-                            />
-                            <Route
-                                path="/admin/rooms"
-                                element={<ModulePlaceholder title="Rooms & Room Types" subtitle="Manage rooms, pricing tiers, capacities, and maintenance statuses" phase="Phase 3" />}
-                            />
-                            <Route
-                                path="/admin/services"
-                                element={<ModulePlaceholder title="Amenities & Services" subtitle="Configure hotel amenities, tours, dining, and shuttle packages" phase="Phase 3" />}
-                            />
+                            <Route path="/admin/hotels" element={<HotelsPage />} />
+                            <Route path="/admin/rooms" element={<RoomsPage />} />
+                            <Route path="/admin/services" element={<ServicesAmenitiesPage />} />
                             <Route
                                 path="/admin/reservations"
                                 element={<ModulePlaceholder title="All Reservations" subtitle="Comprehensive view of all customer bookings, check-in schedules, and statuses" phase="Phase 4" />}
@@ -72,10 +69,7 @@ const App = () => {
                                 path="/admin/operations"
                                 element={<ModulePlaceholder title="Housekeeping & Maintenance" subtitle="Operational coordination between front desk, housekeeping, and engineering" phase="Phase 5" />}
                             />
-                            <Route
-                                path="/admin/users"
-                                element={<ModulePlaceholder title="Users & Roles" subtitle="Staff credentials, role assignments, guest accounts, and access status" phase="Phase 5" />}
-                            />
+                            <Route path="/admin/users" element={<UsersPage />} />
                             <Route
                                 path="/admin/reviews"
                                 element={<ModulePlaceholder title="Reviews & Loyalty" subtitle="Customer feedback, ratings, and loyalty points reward management" phase="Phase 5" />}
