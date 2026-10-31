@@ -1,58 +1,213 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RP Hotels & Resorts Group — Enterprise Reservation & Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **ITLAW701 – Advanced Web Technologies Exam Project**  
+> **Rwanda Polytechnic (RP) Karongi College — Level 7 Information Technology**
 
-## About Laravel
+An enterprise multi-branch hotel reservation, billing, front desk, housekeeping, and executive analytics management system built with **Laravel 12 (PHP 8.4)** and **React 19 (Material UI v9)** in a single-root monorepo.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🌟 Key System Capabilities
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Multi-Branch Inventory Management:** Centralized management across Kigali, Karongi, and Rubavu properties.
+- **Concurrency-Safe Availability Engine:** Anti-double-booking protection with strict date-overlap checks and pessimistic locking (`lockForUpdate()`).
+- **Compliant Taxation & Billing:** Automated 18% Rwanda VAT calculation, folio itemization, loyalty discounts, and simulated Card/MoMo/Cash payments.
+- **Official PDF & CSV Document Engine:** DomPDF Tax Invoices, Payment Receipts, and Executive Analytics PDF & CSV reports.
+- **Reception Front Desk Workspace:** Case-insensitive confirmation code lookup, room assignment, companion guest registration, and folio settlement.
+- **Housekeeping & Turnover State Machine:** Automated turnover task creation upon checkout, 1-click status progression (`dirty` $\to$ `cleaning` $\to$ `clean`), and maintenance integration.
+- **Engineering & Maintenance Log:** Priority-based repair dispatch (`urgent`, `high`, `medium`, `low`) that auto-blocks rooms from inventory while under repair.
+- **Loyalty Points System:** Earn 1 point per 1,000 RWF spent on completed stays; redeem points at 50 RWF discount per point.
+- **Executive Analytics & Recharts Dashboards:** Real-time revenue charts, occupancy trends, room type popularity, and staff performance metrics.
+- **Security & Fraud Detection Center:** Automated IP velocity and booking spam anomaly detection, audit trail logging, and account suspension.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Technology Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Component | Technology | Version / Specification |
+| :--- | :--- | :--- |
+| **Backend Framework** | Laravel | 12.x on PHP 8.4 |
+| **Database** | MySQL / SQLite | InnoDB, 24 Tables in 3NF |
+| **Authentication** | Laravel Sanctum | Bearer Token API + Role Middleware |
+| **Frontend Framework** | React | 19.x with React Router v7 |
+| **UI Components** | Material UI (MUI) | v9 with Dark/Light Mode & Theme Tokens |
+| **Data Visualization** | Recharts | AreaChart, BarChart, Donut PieChart |
+| **PDF Generation** | DomPDF | Barryvdh Laravel DomPDF Wrapper |
+| **Build Tool** | Vite | 8.x with Rolldown Bundling |
+| **Test Suite** | Pest PHP | 44 Feature & Unit Tests (100% Passing) |
+| **Code Formatter** | Laravel Pint | Standardized Laravel Code Styling |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 📋 System Requirements
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Ensure your development environment meets these prerequisites:
+- **PHP:** `^8.4` with extensions: `pdo`, `pdo_mysql` / `pdo_sqlite`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `curl`
+- **Composer:** `^2.5`
+- **Node.js:** `^20.x` or `^22.x`
+- **NPM:** `^10.x`
 
+---
+
+## 🚀 Installation & Setup Guide
+
+### 1. Clone the Repository
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/Jacksonsod/hotel-reservation-system.git
+cd hotel-reservation-system
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Install Backend Dependencies
+```bash
+composer install
+```
 
-## Contributing
+### 3. Install Frontend Dependencies
+```bash
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Environment Configuration
+Copy `.env.example` to `.env` and generate the application encryption key:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+Configure your database connection in `.env` (MySQL or SQLite). For SQLite:
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/to/database/database.sqlite
+```
+*(Ensure the SQLite database file exists via `touch database/database.sqlite` if using SQLite).*
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Run Database Migrations & Seeders
+Execute the 24 migrations and populate realistic seed data for hotels, rooms, amenities, services, and default accounts:
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Security Vulnerabilities
+### 6. Create Public Storage Link
+Link the storage directory for uploaded hotel and room images:
+```bash
+php artisan storage:link
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 7. Compile Frontend Assets
+Build production assets using Vite:
+```bash
+npm run build
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 💻 Running the Application
+
+### Option A: Using Concurrently (Recommended)
+Run both the Laravel backend server and Vite frontend dev watcher with one command:
+```bash
+npm run dev
+```
+
+### Option B: Running Services Separately
+In Terminal 1 (Laravel API Backend):
+```bash
+php artisan serve
+```
+
+In Terminal 2 (Vite Frontend Watcher):
+```bash
+npm run dev
+```
+
+Once running, access the application in your browser at:
+👉 **`http://localhost:8000`**
+
+---
+
+## 🔐 Default Evaluation Accounts
+
+All pre-seeded user accounts use the unified password: **`Hotel@2026`**
+
+| Role | Email Address | Password | Default Redirect Route |
+| :--- | :--- | :--- | :--- |
+| **System Admin** | `admin@rphotels.rw` | `Hotel@2026` | `/admin/dashboard` |
+| **Front Desk Receptionist** | `reception@rphotels.rw` | `Hotel@2026` | `/reception/dashboard` |
+| **Housekeeping Staff** | `housekeeping@rphotels.rw` | `Hotel@2026` | `/housekeeping/dashboard` |
+| **Registered Guest** | `guest@rphotels.rw` | `Hotel@2026` | `/guest/dashboard` |
+
+---
+
+## 🧪 Running Automated Tests
+
+The application includes a comprehensive **Pest PHP feature test suite** with 44 tests covering authentication, administrative CRUD, room availability, reservation concurrency, payments, PDF downloads, front desk operations, housekeeping turnover, and executive analytics:
+
+```bash
+php artisan test
+```
+Or directly via Pest:
+```bash
+vendor/bin/pest
+```
+
+### Run Pint Code Formatter:
+```bash
+vendor/bin/pint --format agent
+```
+
+---
+
+## ⏰ Automated Scheduled Commands
+
+To dispatch automated check-in reminders for guests arriving tomorrow and check-out reminders for guests departing tomorrow:
+```bash
+php artisan hotel:send-reminders
+```
+*(This can also be triggered directly from the Executive Dashboard or Reception UI).*
+
+---
+
+## 📂 Project Structure Overview
+
+```
+hotel-reservation-system/
+├── app/
+│   ├── Console/Commands/
+│   │   └── SendStayRemindersCommand.php      # Daily stay reminders automation
+│   ├── Http/Controllers/Api/
+│   │   ├── AuthController.php               # Login, register, profile
+│   │   ├── HotelController.php              # Multi-branch properties CRUD
+│   │   ├── RoomController.php               # Room inventory & image uploads
+│   │   ├── ReservationController.php        # Concurrency-safe booking engine
+│   │   ├── PaymentInvoiceController.php     # Payments & PDF invoices / receipts
+│   │   ├── CheckInCheckoutController.php    # Front desk check-in/out & folios
+│   │   ├── HousekeepingController.php       # Cleaning turnover management
+│   │   ├── MaintenanceController.php        # Engineering repairs & auto-blocking
+│   │   ├── ReportAnalyticsController.php    # Executive analytics, PDF & CSV export
+│   │   └── SecurityAuditController.php      # Fraud triage & audit logs
+│   ├── Models/                              # 24 Eloquent Models
+│   └── Services/                            # Availability, Billing, Loyalty, Fraud
+├── database/
+│   ├── migrations/                          # 24 Sequentially Ordered Migrations
+│   └── seeders/DatabaseSeeder.php           # Realistic multi-branch seed data
+├── resources/
+│   ├── js/
+│   │   ├── components/layout/AppShell.jsx   # TopHeader, Sidebar & Role navigation
+│   │   ├── context/AuthContext.jsx          # Role state & Sanctum tokens
+│   │   ├── pages/
+│   │   │   ├── admin/                       # Dashboard, Reports, Security, Hotels, Rooms
+│   │   │   ├── reception/                   # Front Desk, Check-In/Out, Folios, Rooms Board
+│   │   │   ├── housekeeping/                # Turnover Board & Maintenance Requests
+│   │   │   └── guest/                       # Bookings, Payments, Loyalty & Reviews
+│   │   └── theme/theme.js                   # Color tokens & RECHARTS_COLORS
+│   └── views/pdf/                           # DomPDF templates (Invoice, Receipt, Analytics)
+├── tests/Feature/                           # 44 End-to-end Pest Feature Tests
+└── PROJECT_REPORT.md                        # Academic technical report
+```
+
+---
+
+## 📜 License & Acknowledgements
+
+Developed for **ITLAW701 – Advanced Web Technologies** at **RP Karongi College**.  
+Built in compliance with Rwandan hospitality and tax regulations.

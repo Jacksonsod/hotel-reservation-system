@@ -36,18 +36,25 @@ trait ApiResponse
      */
     public function paginatedResponse(
         LengthAwarePaginator $paginator,
-        string $message = 'Records retrieved successfully.'
+        string $message = 'Records retrieved successfully.',
+        ?array $meta = null
     ): JsonResponse {
+        $metaData = [
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+        ];
+
+        if ($meta !== null) {
+            $metaData = array_merge($metaData, $meta);
+        }
+
         return response()->json([
             'success' => true,
             'message' => $message,
             'data' => $paginator->items(),
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
+            'meta' => $metaData,
         ], 200);
     }
 

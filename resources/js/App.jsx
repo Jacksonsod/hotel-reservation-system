@@ -37,6 +37,11 @@ import HousekeepingBoard from './pages/housekeeping/HousekeepingBoard';
 import MaintenanceRequestsPage from './pages/housekeeping/MaintenanceRequestsPage';
 import AdminOperationsPage from './pages/admin/AdminOperationsPage';
 
+// Phase 6 Executive Dashboard, Reports Analytics & Security Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ReportsAnalyticsPage from './pages/admin/ReportsAnalyticsPage';
+import SecurityFraudAuditPage from './pages/admin/SecurityFraudAuditPage';
+
 const RootRedirect = () => {
     const { user, loading, getRoleHomeRoute } = useAuth();
 
@@ -70,10 +75,7 @@ const App = () => {
                             <Route path="/profile" element={<ProfilePage />} />
 
                             {/* Admin Routes */}
-                            <Route
-                                path="/admin/dashboard"
-                                element={<ModulePlaceholder title="Executive Dashboard" subtitle="Real-time multi-branch revenue, occupancy rates, and operational KPIs" phase="Phase 5" />}
-                            />
+                            <Route path="/admin/dashboard" element={<AdminDashboard />} />
                             <Route path="/admin/hotels" element={<HotelsPage />} />
                             <Route path="/admin/rooms" element={<RoomsPage />} />
                             <Route path="/admin/services" element={<ServicesAmenitiesPage />} />
@@ -82,14 +84,8 @@ const App = () => {
                             <Route path="/admin/operations" element={<AdminOperationsPage />} />
                             <Route path="/admin/users" element={<UsersPage />} />
                             <Route path="/admin/reviews" element={<AdminReviewsPage />} />
-                            <Route
-                                path="/admin/security"
-                                element={<ModulePlaceholder title="Fraud Alerts & Audit Logs" subtitle="Automated suspicious activity detection and complete system audit trail" phase="Phase 5" />}
-                            />
-                            <Route
-                                path="/admin/reports"
-                                element={<ModulePlaceholder title="Reports & Analytics" subtitle="Revenue trends, room type popularity, and PDF/CSV export engine" phase="Phase 6" />}
-                            />
+                            <Route path="/admin/security" element={<SecurityFraudAuditPage />} />
+                            <Route path="/admin/reports" element={<ReportsAnalyticsPage />} />
 
                             {/* Receptionist Routes */}
                             <Route path="/reception/dashboard" element={<ReceptionDashboard />} />

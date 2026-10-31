@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class NotificationController extends Controller
 {
@@ -66,5 +67,18 @@ class NotificationController extends Controller
             ->update(['is_read' => true]);
 
         return $this->successResponse(null, 'All notifications marked as read.');
+    }
+
+    /**
+     * Dispatch stay reminders on demand.
+     */
+    public function sendReminders(Request $request): JsonResponse
+    {
+        Artisan::call('hotel:send-reminders');
+        $output = Artisan::output();
+
+        return $this->successResponse([
+            'output' => trim($output),
+        ], 'Stay reminders dispatched successfully.');
     }
 }
