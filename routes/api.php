@@ -4,6 +4,9 @@ use App\Http\Controllers\Api\AmenityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PaymentInvoiceController;
+use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\Api\ReviewLoyaltyController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\ServiceController;
@@ -37,6 +40,7 @@ Route::prefix('public')->group(function () {
     Route::get('/room-types', [RoomTypeController::class, 'index']);
     Route::get('/amenities', [AmenityController::class, 'index']);
     Route::get('/services', [ServiceController::class, 'index']);
+    Route::get('/availability', [ReservationController::class, 'publicAvailability']);
 });
 
 // Authenticated Routes
@@ -48,7 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
     });
 
-    // Authenticated Read Access for Staff & Guests
+    // Hotel & Room Resource Read Access
     Route::get('/hotels', [HotelController::class, 'index']);
     Route::get('/hotels/{hotel}', [HotelController::class, 'show']);
     Route::get('/rooms', [RoomController::class, 'index']);
@@ -59,6 +63,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/amenities/{amenity}', [AmenityController::class, 'show']);
     Route::get('/services', [ServiceController::class, 'index']);
     Route::get('/services/{service}', [ServiceController::class, 'show']);
+
+    // Phase 4: Reservations
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::get('/reservations/{reservation}', [ReservationController::class, 'show']);
+    Route::post('/reservations', [ReservationController::class, 'store']);
+    Route::put('/reservations/{reservation}', [ReservationController::class, 'update']);
+    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel']);
+
+    // Phase 4: Payments & PDF Invoices / Receipts
+    Route::get('/payments', [PaymentInvoiceController::class, 'index']);
+    Route::post('/reservations/{reservation}/payments', [PaymentInvoiceController::class, 'storePayment']);
+    Route::get('/invoices/{reservation}/pdf', [PaymentInvoiceController::class, 'downloadInvoicePdf']);
+    Route::get('/payments/{payment}/receipt-pdf', [PaymentInvoiceController::class, 'downloadReceiptPdf']);
+
+    // Phase 4: Loyalty Points & Reviews
+    Route::get('/loyalty', [ReviewLoyaltyController::class, 'getLoyalty']);
+    Route::get('/reviews', [ReviewLoyaltyController::class, 'getReviews']);
+    Route::post('/reviews', [ReviewLoyaltyController::class, 'storeReview']);
 
     // Admin Role-Protected Management Routes
     Route::middleware('role:admin')->group(function () {

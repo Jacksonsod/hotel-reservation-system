@@ -17,6 +17,17 @@ import RoomsPage from './pages/admin/RoomsPage';
 import ServicesAmenitiesPage from './pages/admin/ServicesAmenitiesPage';
 import UsersPage from './pages/admin/UsersPage';
 
+// Phase 4 Booking, Payment, Loyalty & Review Pages
+import LandingHotelSearch from './pages/public/LandingHotelSearch';
+import GuestDashboard from './pages/guest/GuestDashboard';
+import MyReservations from './pages/guest/MyReservations';
+import GuestPayments from './pages/guest/GuestPayments';
+import GuestLoyalty from './pages/guest/GuestLoyalty';
+import GuestReviews from './pages/guest/GuestReviews';
+import ReservationsManagementPage from './pages/admin/ReservationsManagementPage';
+import PaymentsInvoicesPage from './pages/admin/PaymentsInvoicesPage';
+import AdminReviewsPage from './pages/admin/AdminReviewsPage';
+
 const RootRedirect = () => {
     const { user, loading, getRoleHomeRoute } = useAuth();
 
@@ -57,23 +68,14 @@ const App = () => {
                             <Route path="/admin/hotels" element={<HotelsPage />} />
                             <Route path="/admin/rooms" element={<RoomsPage />} />
                             <Route path="/admin/services" element={<ServicesAmenitiesPage />} />
-                            <Route
-                                path="/admin/reservations"
-                                element={<ModulePlaceholder title="All Reservations" subtitle="Comprehensive view of all customer bookings, check-in schedules, and statuses" phase="Phase 4" />}
-                            />
-                            <Route
-                                path="/admin/payments"
-                                element={<ModulePlaceholder title="Payments & Invoices" subtitle="Review transactions, outstanding balances, refunds, and issued tax invoices" phase="Phase 4" />}
-                            />
+                            <Route path="/admin/reservations" element={<ReservationsManagementPage />} />
+                            <Route path="/admin/payments" element={<PaymentsInvoicesPage />} />
                             <Route
                                 path="/admin/operations"
                                 element={<ModulePlaceholder title="Housekeeping & Maintenance" subtitle="Operational coordination between front desk, housekeeping, and engineering" phase="Phase 5" />}
                             />
                             <Route path="/admin/users" element={<UsersPage />} />
-                            <Route
-                                path="/admin/reviews"
-                                element={<ModulePlaceholder title="Reviews & Loyalty" subtitle="Customer feedback, ratings, and loyalty points reward management" phase="Phase 5" />}
-                            />
+                            <Route path="/admin/reviews" element={<AdminReviewsPage />} />
                             <Route
                                 path="/admin/security"
                                 element={<ModulePlaceholder title="Fraud Alerts & Audit Logs" subtitle="Automated suspicious activity detection and complete system audit trail" phase="Phase 5" />}
@@ -92,18 +94,12 @@ const App = () => {
                                 path="/reception/check-in-out"
                                 element={<ModulePlaceholder title="Check-In & Check-Out" subtitle="Guest arrival registration, room key assignment, billing calculation, and checkout" phase="Phase 4" />}
                             />
-                            <Route
-                                path="/reception/reservations"
-                                element={<ModulePlaceholder title="Front Desk Reservations" subtitle="Create walk-in bookings, manage modifications, and handle cancellations" phase="Phase 4" />}
-                            />
+                            <Route path="/reception/reservations" element={<ReservationsManagementPage />} />
                             <Route
                                 path="/reception/services"
                                 element={<ModulePlaceholder title="Guest Service Orders" subtitle="Post room service, shuttle, and tour charges directly to guest folios" phase="Phase 4" />}
                             />
-                            <Route
-                                path="/reception/payments"
-                                element={<ModulePlaceholder title="Payments & Invoices" subtitle="Collect Cash, Card, and Mobile Money payments with receipt printing" phase="Phase 4" />}
-                            />
+                            <Route path="/reception/payments" element={<PaymentsInvoicesPage />} />
                             <Route
                                 path="/reception/rooms"
                                 element={<ModulePlaceholder title="Room Availability Board" subtitle="Real-time visual room matrix across all floors and types" phase="Phase 4" />}
@@ -128,30 +124,12 @@ const App = () => {
                             />
 
                             {/* Guest Routes */}
-                            <Route
-                                path="/guest/dashboard"
-                                element={<ModulePlaceholder title="Guest Dashboard" subtitle="Welcome to RP Hotels. View upcoming stays and loyalty balance" phase="Phase 4" />}
-                            />
-                            <Route
-                                path="/guest/hotels"
-                                element={<ModulePlaceholder title="Browse Hotels & Rooms" subtitle="Search availability across Karongi, Kigali, and Rubavu properties" phase="Phase 3" />}
-                            />
-                            <Route
-                                path="/guest/reservations"
-                                element={<ModulePlaceholder title="My Reservations" subtitle="View active, upcoming, and past booking confirmations" phase="Phase 4" />}
-                            />
-                            <Route
-                                path="/guest/payments"
-                                element={<ModulePlaceholder title="Payments & Invoices" subtitle="Download official VAT receipts and review payment history" phase="Phase 4" />}
-                            />
-                            <Route
-                                path="/guest/loyalty"
-                                element={<ModulePlaceholder title="Loyalty Points" subtitle="Earn 1 point per 1,000 RWF spent and redeem points for booking discounts" phase="Phase 5" />}
-                            />
-                            <Route
-                                path="/guest/reviews"
-                                element={<ModulePlaceholder title="My Reviews" subtitle="Share your experience and rate your stays at RP Hotels" phase="Phase 5" />}
-                            />
+                            <Route path="/guest/dashboard" element={<GuestDashboard />} />
+                            <Route path="/guest/hotels" element={<LandingHotelSearch />} />
+                            <Route path="/guest/reservations" element={<MyReservations />} />
+                            <Route path="/guest/payments" element={<GuestPayments />} />
+                            <Route path="/guest/loyalty" element={<GuestLoyalty />} />
+                            <Route path="/guest/reviews" element={<GuestReviews />} />
                         </Route>
 
                         {/* Catch-all */}
