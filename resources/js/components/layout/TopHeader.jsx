@@ -28,7 +28,7 @@ import HotelOutlinedIcon from '@mui/icons-material/HotelOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useThemeMode } from '../../context/ThemeModeContext';
 import axiosClient from '../../api/axiosClient';
@@ -39,6 +39,42 @@ const TopHeader = ({ onToggleMobileSidebar }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const getPageMeta = (pathname) => {
+        if (pathname.startsWith('/admin/dashboard')) return { title: 'Executive Dashboard', subtitle: 'Overview & key metrics' };
+        if (pathname.startsWith('/admin/hotels')) return { title: 'Hotel Branches', subtitle: 'Manage properties & multimedia' };
+        if (pathname.startsWith('/admin/rooms')) return { title: 'Room Inventory', subtitle: 'Room types, amenities & units' };
+        if (pathname.startsWith('/admin/services')) return { title: 'Hotel Services', subtitle: 'Dining, wellness & transport' };
+        if (pathname.startsWith('/admin/reservations')) return { title: 'Reservation Management', subtitle: 'Bookings, status & guests' };
+        if (pathname.startsWith('/admin/payments')) return { title: 'Financial & Transactions', subtitle: 'Payments, invoices & revenue' };
+        if (pathname.startsWith('/admin/operations')) return { title: 'Housekeeping & Operations', subtitle: 'Room readiness & maintenance' };
+        if (pathname.startsWith('/admin/users')) return { title: 'User Management', subtitle: 'Staff accounts & guest profiles' };
+        if (pathname.startsWith('/admin/reviews')) return { title: 'Guest Feedback & Reviews', subtitle: 'Ratings & sentiment' };
+        if (pathname.startsWith('/admin/security')) return { title: 'Security & Audit Logs', subtitle: 'Fraud alerts & system trail' };
+        if (pathname.startsWith('/admin/reports')) return { title: 'Analytics & Reporting', subtitle: 'Performance metrics & exports' };
+
+        if (pathname.startsWith('/reception/dashboard')) return { title: 'Front Desk Operations', subtitle: 'Arrivals, departures & room status' };
+        if (pathname.startsWith('/reception/rooms')) return { title: 'Room Availability Board', subtitle: 'Real-time room occupancy' };
+        if (pathname.startsWith('/reception/services')) return { title: 'Guest Service Orders', subtitle: 'Amenities & service requests' };
+        if (pathname.startsWith('/reception/guests')) return { title: 'Guest Directory', subtitle: 'Registered guest profiles' };
+
+        if (pathname.startsWith('/housekeeping/dashboard')) return { title: 'Housekeeping Operations', subtitle: 'Room cleaning & task queue' };
+        if (pathname.startsWith('/housekeeping/tasks')) return { title: 'Maintenance Tasks', subtitle: 'Work orders & equipment repairs' };
+
+        if (pathname.startsWith('/guest/dashboard')) return { title: 'Guest Dashboard', subtitle: 'Your active stays & rewards' };
+        if (pathname.startsWith('/guest/hotels')) return { title: 'Browse Hotels & Suites', subtitle: 'Explore Rwanda luxury accommodations' };
+        if (pathname.startsWith('/guest/reservations')) return { title: 'My Reservations', subtitle: 'Booking history & active stays' };
+        if (pathname.startsWith('/guest/payments')) return { title: 'Billing & Invoices', subtitle: 'Payment history & receipts' };
+        if (pathname.startsWith('/guest/loyalty')) return { title: 'Loyalty Rewards', subtitle: 'Tier status & points redemption' };
+        if (pathname.startsWith('/guest/reviews')) return { title: 'My Reviews', subtitle: 'Feedback & guest experiences' };
+
+        if (pathname.startsWith('/profile')) return { title: 'My Profile', subtitle: 'Personal information & account settings' };
+
+        return { title: 'RP Hotels', subtitle: 'Rwanda Premium Hospitality' };
+    };
+
+    const pageMeta = getPageMeta(location.pathname);
 
     const { user, logout, selectedBranchId, setSelectedBranchId } = useAuth();
     const { mode, toggleThemeMode } = useThemeMode();
@@ -132,31 +168,60 @@ const TopHeader = ({ onToggleMobileSidebar }) => {
             }}
         >
             <Toolbar disableGutters sx={{ minHeight: 64, display: 'flex', justifyContent: 'space-between' }}>
-                {/* Left side: Mobile Toggle & Brand / Title */}
+                {/* Left side: Mobile Toggle & Brand (on mobile) OR Active Page Title / Subtitle (on desktop) */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    {isMobile && (
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            onClick={onToggleMobileSidebar}
-                            size="small"
-                        >
-                            <MenuIcon />
-                        </IconButton>
+                    {isMobile ? (
+                        <>
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                edge="start"
+                                onClick={onToggleMobileSidebar}
+                                size="small"
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <HotelOutlinedIcon sx={{ color: theme.palette.secondary.main, fontSize: 26 }} />
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontWeight: 700,
+                                    color: theme.palette.primary.main,
+                                    letterSpacing: '-0.02em',
+                                    fontSize: '1.05rem',
+                                }}
+                            >
+                                RP HOTELS
+                            </Typography>
+                        </>
+                    ) : (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <Typography
+                                variant="subtitle1"
+                                sx={{
+                                    fontWeight: 700,
+                                    color: theme.palette.text.primary,
+                                    lineHeight: 1.25,
+                                    fontSize: '1.05rem',
+                                }}
+                            >
+                                {pageMeta.title}
+                            </Typography>
+                            {pageMeta.subtitle && (
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: theme.palette.text.secondary,
+                                        fontSize: '0.75rem',
+                                        lineHeight: 1.2,
+                                        mt: 0.25,
+                                    }}
+                                >
+                                    {pageMeta.subtitle}
+                                </Typography>
+                            )}
+                        </Box>
                     )}
-                    <HotelOutlinedIcon sx={{ color: theme.palette.secondary.main, fontSize: 28 }} />
-                    <Typography
-                        variant="h4"
-                        sx={{
-                            fontWeight: 700,
-                            color: theme.palette.primary.main,
-                            display: { xs: 'none', sm: 'block' },
-                            letterSpacing: '-0.02em',
-                        }}
-                    >
-                        RP HOTELS
-                    </Typography>
                 </Box>
 
                 {/* Right side controls in exact specification order */}

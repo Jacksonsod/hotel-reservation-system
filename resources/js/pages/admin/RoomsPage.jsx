@@ -39,6 +39,7 @@ import ConfirmDialog from '../../components/common/ConfirmDialog';
 import ImageUploaderPreview from '../../components/common/ImageUploaderPreview';
 import { useAuth } from '../../context/AuthContext';
 import axiosClient from '../../api/axiosClient';
+import { getImageUrl, handleImageError } from '../../utils/formatters';
 
 const RoomsPage = () => {
     const theme = useTheme();
@@ -327,12 +328,6 @@ const RoomsPage = () => {
         }
     };
 
-    const getImageUrl = (path) => {
-        if (!path) return '';
-        if (path.startsWith('http') || path.startsWith('/storage/')) return path;
-        return `/storage/${path}`;
-    };
-
     // DataGrid columns
     const columns = [
         {
@@ -344,7 +339,8 @@ const RoomsPage = () => {
                 return (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, height: '100%' }}>
                         <Avatar
-                            src={getImageUrl(img)}
+                            src={getImageUrl(img, 'room')}
+                            imgProps={{ onError: handleImageError('room') }}
                             alt={params.row.room_number}
                             variant="rounded"
                             sx={{ width: 36, height: 36, borderRadius: '6px', bgcolor: 'primary.light' }}
@@ -868,7 +864,8 @@ const RoomsPage = () => {
                                         >
                                             <Box
                                                 component="img"
-                                                src={getImageUrl(img.image_path)}
+                                                src={getImageUrl(img.image_path, 'room')}
+                                                onError={handleImageError('room')}
                                                 alt="Room"
                                                 sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                             />

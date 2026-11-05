@@ -60,7 +60,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../../api/axiosClient';
 import PaymentDialog from '../../components/common/PaymentDialog';
-import { formatCurrency, formatDate, maskIdNumber } from '../../utils/formatters';
+import { formatCurrency, formatDate, maskIdNumber, getImageUrl, handleImageError } from '../../utils/formatters';
 
 const getAmenityIcon = (name = '') => {
     const lower = name.toLowerCase();
@@ -96,7 +96,7 @@ const LandingHotelSearch = ({ isPublic = false }) => {
     const [location, setLocation] = useState('all');
     const [guests, setGuests] = useState(2);
     const [roomTypeId, setRoomTypeId] = useState('all');
-    const [priceRange, setPriceRange] = useState([30000, 400000]);
+    const [maxPrice, setMaxPrice] = useState('all');
     const [selectedAmenities, setSelectedAmenities] = useState([]);
 
     // Data lists
@@ -158,11 +158,10 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                 check_in: checkIn,
                 check_out: checkOut,
                 number_of_guests: guests,
-                min_price: priceRange[0],
-                max_price: priceRange[1],
             };
             if (location !== 'all') params.location = location;
             if (roomTypeId !== 'all') params.room_type_id = roomTypeId;
+            if (maxPrice !== 'all') params.max_price = Number(maxPrice);
             if (selectedAmenities.length > 0) params.amenity_ids = selectedAmenities;
 
             const res = await axiosClient.get('/public/availability', { params });
@@ -252,12 +251,6 @@ const LandingHotelSearch = ({ isPublic = false }) => {
         } finally {
             setBookingSubmitting(false);
         }
-    };
-
-    const getImageUrl = (path) => {
-        if (!path) return '';
-        if (path.startsWith('http') || path.startsWith('/storage/')) return path;
-        return `/storage/${path}`;
     };
 
     return (
@@ -449,10 +442,10 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                         </Grid>
                     </Grid>
 
-                    {/* Secondary Filters: Room Type & Amenities */}
+                    {/* Secondary Filters: Room Type, Max Price & Amenities */}
                     <Divider sx={{ my: 2 }} />
                     <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6} md={3}>
                             <FormControl fullWidth size="small">
                                 <InputLabel>Room Type Tier</InputLabel>
                                 <Select
@@ -469,9 +462,27 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} sm={8}>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth size="small">
+                                <InputLabel>Max Price (RWF)</InputLabel>
+                                <Select
+                                    value={maxPrice}
+                                    label="Max Price (RWF)"
+                                    onChange={(e) => setMaxPrice(e.target.value)}
+                                >
+                                    <MenuItem value="all">All Budgets (No Limit)</MenuItem>
+                                    <MenuItem value="50000">Up to RWF 50,000</MenuItem>
+                                    <MenuItem value="80000">Up to RWF 80,000</MenuItem>
+                                    <MenuItem value="120000">Up to RWF 120,000</MenuItem>
+                                    <MenuItem value="180000">Up to RWF 180,000</MenuItem>
+                                    <MenuItem value="250000">Up to RWF 250,000</MenuItem>
+                                    <MenuItem value="400000">Up to RWF 400,000</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
                                     Amenities:
                                 </Typography>
                                 {amenitiesList.map((a) => {
@@ -537,11 +548,12 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                     </Button>
                 </Paper>
             ) : (
-                <Grid container spacing={3}>
+                <Grid container spacing={2.5}>
                     {availableRooms.map((room) => {
                         const img = room.images?.[0]?.image_path;
+                        const roomTypeName = room.room_type?.type_name || room.roomType?.type_name || 'Standard Room';
                         return (
-                            <Grid item xs={12} sm={6} lg={4} key={room.room_id}>
+                            <Grid item xs={12} sm={6} md={6} lg={4} key={room.room_id}>
                                 <Card
                                     sx={{
                                         height: '100%',
@@ -558,47 +570,26 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                                         },
                                     }}
                                 >
-                                    <Box sx={{ position: 'relative', height: 200, bgcolor: 'action.hover', overflow: 'hidden' }}>
-                                        {img ? (
-                                            <CardMedia
-                                                component="img"
-                                                height="200"
-                                                image={getImageUrl(img)}
-                                                alt={`Room ${room.room_number}`}
-                                                sx={{ objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            <Box
-                                                sx={{
-                                                    height: '100%',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    background: theme.palette.mode === 'dark'
-                                                        ? 'linear-gradient(135deg, #0B1120 0%, #1E293B 100%)'
-                                                        : 'linear-gradient(135deg, #1B365D 0%, #0F2342 100%)',
-                                                    color: '#FFFFFF',
-                                                    p: 2,
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                <HotelOutlinedIcon sx={{ fontSize: 48, color: '#C59B27', mb: 0.5 }} />
-                                                <Typography variant="caption" sx={{ color: '#E2E8F0', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 600 }}>
-                                                    RP Luxury Suites
-                                                </Typography>
-                                            </Box>
-                                        )}
+                                    <Box sx={{ position: 'relative', height: 190, bgcolor: 'action.hover', overflow: 'hidden' }}>
+                                        <CardMedia
+                                            component="img"
+                                            height="190"
+                                            image={getImageUrl(img, 'room')}
+                                            onError={handleImageError('room')}
+                                            alt={`Room ${room.room_number}`}
+                                            sx={{ objectFit: 'cover' }}
+                                        />
                                         <Chip
-                                            label={room.roomType?.type_name || 'Standard'}
+                                            label={roomTypeName}
                                             size="small"
                                             sx={{
                                                 position: 'absolute',
-                                                top: 12,
-                                                left: 12,
+                                                top: 10,
+                                                left: 10,
                                                 bgcolor: 'rgba(15, 23, 42, 0.85)',
                                                 color: '#FFFFFF',
                                                 fontWeight: 600,
+                                                fontSize: '0.75rem',
                                             }}
                                         />
                                         <Chip
@@ -606,36 +597,37 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                                             size="small"
                                             sx={{
                                                 position: 'absolute',
-                                                top: 12,
-                                                right: 12,
+                                                top: 10,
+                                                right: 10,
                                                 fontFamily: 'JetBrains Mono, monospace',
                                                 bgcolor: 'secondary.main',
                                                 color: '#0F172A',
                                                 fontWeight: 700,
+                                                fontSize: '0.75rem',
                                             }}
                                         />
                                     </Box>
 
-                                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2.5 }}>
+                                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
                                         <Typography variant="caption" color="secondary.main" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                                             {room.hotel?.name} • {room.hotel?.location}
                                         </Typography>
-                                        <Typography variant="h3" sx={{ fontWeight: 700, mt: 0.5, mb: 1 }}>
-                                            {room.roomType?.type_name}
+                                        <Typography variant="h4" sx={{ fontWeight: 700, mt: 0.5, mb: 0.5, fontSize: '1.15rem' }}>
+                                            {roomTypeName}
                                         </Typography>
 
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flex: 1, minHeight: 40 }} noWrap>
-                                            {room.description || `${room.roomType?.type_name} with premium Rwandan hospitality service.`}
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, flex: 1, minHeight: 36, fontSize: '0.8125rem' }} noWrap>
+                                            {room.description || `${roomTypeName} with premium Rwandan hospitality service.`}
                                         </Typography>
 
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 2 }}>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
                                             <Chip
-                                                icon={<PersonOutlineOutlinedIcon sx={{ fontSize: '0.85rem !important' }} />}
+                                                icon={<PersonOutlineOutlinedIcon sx={{ fontSize: '0.8rem !important' }} />}
                                                 label={`Up to ${room.capacity || 2} Guests`}
                                                 size="small"
                                                 variant="outlined"
                                                 color="primary"
-                                                sx={{ fontSize: '0.725rem', fontWeight: 600 }}
+                                                sx={{ fontSize: '0.7rem', fontWeight: 600, height: 24 }}
                                             />
                                             {(room.amenities || []).slice(0, 3).map((a) => (
                                                 <Chip
@@ -644,36 +636,36 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                                                     label={a.amenity_name}
                                                     size="small"
                                                     variant="outlined"
-                                                    sx={{ fontSize: '0.725rem' }}
+                                                    sx={{ fontSize: '0.7rem', height: 24 }}
                                                 />
                                             ))}
                                             {(room.amenities || []).length > 3 && (
                                                 <Chip
-                                                    label={`+${room.amenities.length - 3} more`}
+                                                    label={`+${(room.amenities || []).length - 3}`}
                                                     size="small"
                                                     variant="outlined"
-                                                    sx={{ fontSize: '0.725rem', fontWeight: 600 }}
+                                                    sx={{ fontSize: '0.7rem', height: 24 }}
                                                 />
                                             )}
                                         </Box>
 
-                                        <Divider sx={{ my: 1.5 }} />
+                                        <Divider sx={{ my: 1 }} />
 
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto', pt: 0.5 }}>
                                             <Box>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    Nightly Rate
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.7rem' }}>
+                                                    Per Night
                                                 </Typography>
-                                                <Typography variant="h3" sx={{ fontWeight: 800, color: 'primary.main', fontFamily: 'JetBrains Mono, monospace' }}>
-                                                    {formatCurrency(room.price_per_night)}{' '}
-                                                    <span style={{ fontSize: '0.75rem', fontWeight: 500, color: theme.palette.text.secondary }}>/ night</span>
+                                                <Typography variant="h5" color="primary.main" sx={{ fontWeight: 800, fontSize: '1.1rem', fontFamily: 'JetBrains Mono, monospace' }}>
+                                                    {formatCurrency(room.price_per_night)}
                                                 </Typography>
                                             </Box>
                                             <Button
                                                 variant="contained"
                                                 color="primary"
+                                                size="small"
                                                 onClick={() => handleOpenBooking(room)}
-                                                sx={{ fontWeight: 600 }}
+                                                sx={{ fontWeight: 700, px: 2, py: 0.75, borderRadius: '8px' }}
                                             >
                                                 Book Now
                                             </Button>
@@ -700,7 +692,7 @@ const LandingHotelSearch = ({ isPublic = false }) => {
                             Confirm Your Stay Reservation
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                            {selectedRoomToBook?.hotel?.name} • Room {selectedRoomToBook?.room_number} ({selectedRoomToBook?.roomType?.type_name})
+                            {selectedRoomToBook?.hotel?.name} • Room {selectedRoomToBook?.room_number} ({selectedRoomToBook?.room_type?.type_name || selectedRoomToBook?.roomType?.type_name || 'Standard Room'})
                         </Typography>
                     </Box>
                     <IconButton size="small" onClick={() => setBookingDialogOpen(false)} disabled={bookingSubmitting}>

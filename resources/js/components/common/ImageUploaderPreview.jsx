@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
+import { getImageUrl, handleImageError } from '../../utils/formatters';
 
 const MAX_FILE_SIZE_BYTES = 2048 * 1024; // 2MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -81,14 +82,6 @@ const ImageUploaderPreview = ({
         }
     };
 
-    const getImageUrl = (path) => {
-        if (!path) return '';
-        if (path.startsWith('http') || path.startsWith('blob:') || path.startsWith('/storage/')) {
-            return path;
-        }
-        return `/storage/${path}`;
-    };
-
     return (
         <Box sx={{ width: '100%' }}>
             {error && (
@@ -118,6 +111,7 @@ const ImageUploaderPreview = ({
                                     <Box
                                         component="img"
                                         src={getImageUrl(img.image_path || img.url)}
+                                        onError={handleImageError('hotel')}
                                         alt="Existing photo"
                                         sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />
@@ -207,6 +201,7 @@ const ImageUploaderPreview = ({
                     <Box
                         component="img"
                         src={getImageUrl(singlePreview)}
+                        onError={handleImageError('hotel')}
                         alt="Upload preview"
                         sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />

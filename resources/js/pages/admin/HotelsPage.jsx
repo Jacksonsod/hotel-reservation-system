@@ -37,6 +37,7 @@ import StatusChip from '../../components/common/StatusChip';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import ImageUploaderPreview from '../../components/common/ImageUploaderPreview';
 import axiosClient from '../../api/axiosClient';
+import { getImageUrl, handleImageError } from '../../utils/formatters';
 
 const HotelsPage = () => {
     const theme = useTheme();
@@ -292,12 +293,6 @@ const HotelsPage = () => {
         }
     };
 
-    const getImageUrl = (path) => {
-        if (!path) return '';
-        if (path.startsWith('http') || path.startsWith('/storage/')) return path;
-        return `/storage/${path}`;
-    };
-
     // DataGrid columns definition
     const columns = [
         {
@@ -310,7 +305,8 @@ const HotelsPage = () => {
                 return (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, height: '100%' }}>
                         <Avatar
-                            src={getImageUrl(img)}
+                            src={getImageUrl(img, 'hotel')}
+                            imgProps={{ onError: handleImageError('hotel') }}
                             alt={params.row.name}
                             variant="rounded"
                             sx={{ width: 44, height: 44, borderRadius: '8px', bgcolor: 'primary.light' }}
@@ -723,7 +719,8 @@ const HotelsPage = () => {
                                         >
                                             <Box
                                                 component="img"
-                                                src={getImageUrl(img.image_path)}
+                                                src={getImageUrl(img.image_path, 'hotel')}
+                                                onError={handleImageError('hotel')}
                                                 alt="Hotel"
                                                 sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                             />
