@@ -2,6 +2,7 @@ import React from 'react';
 import { Chip, useTheme } from '@mui/material';
 import { STATUS_CHIP_COLORS } from '../../theme/theme';
 import { useTranslation } from 'react-i18next';
+import { humanizeStatus } from '../../utils/formatters';
 
 const StatusChip = ({ status, label: customLabel, size = 'small', sx = {} }) => {
     const theme = useTheme();
@@ -26,9 +27,7 @@ const StatusChip = ({ status, label: customLabel, size = 'small', sx = {} }) => 
     const displayLabel =
         customLabel ||
         (t(`status.${normalizedStatus}`, {
-            defaultValue: (status || '')
-                .replace(/_/g, ' ')
-                .replace(/\b\w/g, (c) => c.toUpperCase()),
+            defaultValue: humanizeStatus(normalizedStatus),
         }));
 
     return (

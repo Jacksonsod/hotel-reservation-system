@@ -20,6 +20,8 @@ import StarsOutlinedIcon from '@mui/icons-material/StarsOutlined';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import axiosClient from '../../api/axiosClient';
+import StatusChip from '../../components/common/StatusChip';
+import { formatCurrency } from '../../utils/formatters';
 
 const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 const PHONE_REGEX = /^\+?[0-9]{10,15}$/;
@@ -134,18 +136,8 @@ const ProfilePage = () => {
                             <Typography variant="h2" sx={{ fontWeight: 700 }}>
                                 {user?.name}
                             </Typography>
-                            <Chip
-                                label={user?.role?.toUpperCase()}
-                                color="primary"
-                                size="small"
-                                sx={{ fontWeight: 700 }}
-                            />
-                            <Chip
-                                label={user?.status?.toUpperCase()}
-                                color="success"
-                                size="small"
-                                sx={{ fontWeight: 700 }}
-                            />
+                            <StatusChip status={user?.role} />
+                            <StatusChip status={user?.status} />
                         </Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                             {user?.email} • {user?.phone || 'No phone recorded'}
@@ -173,6 +165,9 @@ const ProfilePage = () => {
                                 </Typography>
                                 <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.secondary.main }}>
                                     {user.loyalty_account.available_points.toLocaleString()} pts
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                                    Value: {formatCurrency(user.loyalty_account.available_points * 50)}
                                 </Typography>
                             </Box>
                         </Box>

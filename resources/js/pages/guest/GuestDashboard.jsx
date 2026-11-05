@@ -31,6 +31,7 @@ import PaymentDialog from '../../components/common/PaymentDialog';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import { useAuth } from '../../context/AuthContext';
 import axiosClient from '../../api/axiosClient';
+import { formatCurrency, formatDate } from '../../utils/formatters';
 
 const GuestDashboard = () => {
     const theme = useTheme();
@@ -155,9 +156,9 @@ const GuestDashboard = () => {
                     <KpiCard
                         title="Available Loyalty Points"
                         value={`${kpis.points.toLocaleString()} pts`}
-                        subtitle={`Worth RWF ${kpis.rwfEquivalent.toLocaleString()}`}
+                        subtitle={`Worth ${formatCurrency(kpis.rwfEquivalent)}`}
                         icon={<LoyaltyOutlinedIcon />}
-                        color="warning"
+                        color="secondary"
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} lg={3}>
@@ -186,15 +187,15 @@ const GuestDashboard = () => {
 
                         {upcomingList.length === 0 ? (
                             <Box sx={{ py: 4, textAlign: 'center' }}>
-                                <HotelOutlinedIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                <HotelOutlinedIcon sx={{ fontSize: 52, color: 'secondary.main', mb: 1.5 }} />
+                                <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
                                     No upcoming reservations found
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 440, mx: 'auto' }}>
                                     Ready for a relaxing getaway? Explore our resorts in Karongi, Kigali, and Rubavu.
                                 </Typography>
-                                <Button variant="outlined" color="primary" onClick={() => navigate('/guest/hotels')}>
-                                    Explore Available Suites
+                                <Button variant="contained" color="primary" onClick={() => navigate('/guest/hotels')}>
+                                    Browse Available Hotels
                                 </Button>
                             </Box>
                         ) : (
@@ -221,21 +222,21 @@ const GuestDashboard = () => {
                                                         <StatusChip status={res.payment_status} />
                                                     </Box>
                                                     <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                                                        Room {res.room?.room_number} ({res.room?.roomType?.type_name}) • {res.room?.hotel?.location}
+                                                        Room {res.room?.room_number} • {res.room?.roomType?.type_name} • {res.room?.hotel?.location}
                                                     </Typography>
-                                                    <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 600 }}>
-                                                        Code: {res.confirmation_code}
+                                                    <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 700 }}>
+                                                        Confirmation: {res.confirmation_code}
                                                     </Typography>
                                                 </Box>
 
                                                 <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
                                                     <Typography variant="caption" color="text.secondary">Total Stay Cost</Typography>
-                                                    <Typography variant="h3" sx={{ fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>
-                                                        RWF {Number(res.total_amount).toLocaleString()}
+                                                    <Typography variant="h3" sx={{ fontWeight: 800, fontFamily: 'JetBrains Mono, monospace' }}>
+                                                        {formatCurrency(res.total_amount)}
                                                     </Typography>
                                                     {balance > 0 && (
-                                                        <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 600 }}>
-                                                            Due: RWF {balance.toLocaleString()}
+                                                        <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 700, display: 'block' }}>
+                                                            Due: {formatCurrency(balance)}
                                                         </Typography>
                                                     )}
                                                 </Box>
@@ -245,7 +246,7 @@ const GuestDashboard = () => {
 
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    Stay: <strong>{res.check_in}</strong> to <strong>{res.check_out}</strong> ({res.number_of_guests} {res.number_of_guests === 1 ? 'Guest' : 'Guests'})
+                                                    Stay: <strong>{formatDate(res.check_in)}</strong> to <strong>{formatDate(res.check_out)}</strong> ({res.number_of_guests} {res.number_of_guests === 1 ? 'Guest' : 'Guests'})
                                                 </Typography>
 
                                                 <Box sx={{ display: 'flex', gap: 1 }}>
@@ -357,9 +358,14 @@ const GuestDashboard = () => {
                                                     </Typography>
                                                 }
                                                 secondary={
-                                                    <Typography variant="caption" color="text.secondary" noWrap>
-                                                        {n.message}
-                                                    </Typography>
+                                                    <Box component="span">
+                                                        <Typography component="span" variant="caption" color="text.secondary" sx={{ display: 'block' }} noWrap>
+                                                            {n.message}
+                                                        </Typography>
+                                                        <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                                                            {formatDate(n.created_at, true)}
+                                                        </Typography>
+                                                    </Box>
                                                 }
                                             />
                                         </ListItem>
@@ -387,7 +393,7 @@ const GuestDashboard = () => {
             <ConfirmDialog
                 open={confirmCancelOpen}
                 title="Cancel Reservation"
-                message={`Are you sure you want to cancel reservation #${reservationToCancel?.confirmation_code}? Any redeemed loyalty points will be automatically refunded.`}
+                message={`Are you sure you want to cancel reservation ${reservationToCancel?.confirmation_code}? Any redeemed loyalty points will be automatically refunded.`}
                 confirmText="Cancel Reservation"
                 confirmColor="error"
                 onConfirm={handleCancelReservation}

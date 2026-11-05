@@ -14,6 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import TableViewOutlinedIcon from '@mui/icons-material/TableViewOutlined';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
+import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
 import { useTranslation } from 'react-i18next';
 
 const DataTableWrapper = ({
@@ -36,11 +37,52 @@ const DataTableWrapper = ({
     initialPageSize = 10,
     paginationModel,
     onPaginationModelChange,
+    emptyState,
     sx = {},
 }) => {
     const theme = useTheme();
     const { t } = useTranslation();
     const isDark = theme.palette.mode === 'dark';
+
+    const CustomNoRowsOverlay = () => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                p: 4,
+                textAlign: 'center',
+            }}
+        >
+            {emptyState?.icon ? (
+                <Box sx={{ color: theme.palette.secondary.main, mb: 1.5, display: 'flex' }}>
+                    {React.cloneElement(emptyState.icon, { sx: { fontSize: 48, ...emptyState.icon.props?.sx } })}
+                </Box>
+            ) : (
+                <InboxOutlinedIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1.5 }} />
+            )}
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 0.5 }}>
+                {emptyState?.title || t('common.noRecordsFound', 'No records found')}
+            </Typography>
+            {emptyState?.subtitle && (
+                <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 440, mb: emptyState?.actionLabel ? 2.5 : 0 }}>
+                    {emptyState.subtitle}
+                </Typography>
+            )}
+            {emptyState?.actionLabel && emptyState?.onAction && (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={emptyState.onAction}
+                    sx={{ mt: 1 }}
+                >
+                    {emptyState.actionLabel}
+                </Button>
+            )}
+        </Box>
+    );
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, ...sx }}>
@@ -164,6 +206,9 @@ const DataTableWrapper = ({
                     columns={columns}
                     loading={loading}
                     getRowId={getRowId}
+                    slots={{
+                        noRowsOverlay: CustomNoRowsOverlay,
+                    }}
                     pageSizeOptions={pageSizeOptions}
                     initialState={{
                         pagination: {

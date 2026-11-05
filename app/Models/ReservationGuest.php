@@ -23,6 +23,26 @@ class ReservationGuest extends Model
         'contact_phone',
     ];
 
+    protected $appends = [
+        'masked_identification_number',
+    ];
+
+    public function getMaskedIdentificationNumberAttribute(): ?string
+    {
+        if (! $this->identification_number) {
+            return null;
+        }
+
+        $id = trim($this->identification_number);
+        $len = strlen($id);
+
+        if ($len <= 4) {
+            return '••••'.$id;
+        }
+
+        return '••••••••'.substr($id, -4);
+    }
+
     public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class, 'reservation_id', 'reservation_id');

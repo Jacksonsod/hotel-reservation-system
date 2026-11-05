@@ -60,7 +60,7 @@ class ReviewLoyaltyController extends Controller
     public function getReviews(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Review::with(['user', 'hotel', 'reservation'])->latest('review_id');
+        $query = Review::with(['user:user_id,name', 'hotel', 'reservation'])->latest('review_id');
 
         if ($request->filled('hotel_id')) {
             $query->where('hotel_id', $request->input('hotel_id'));

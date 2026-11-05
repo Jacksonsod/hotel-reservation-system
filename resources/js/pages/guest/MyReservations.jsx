@@ -30,13 +30,16 @@ import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 
+import { useNavigate } from 'react-router-dom';
 import StatusChip from '../../components/common/StatusChip';
 import PaymentDialog from '../../components/common/PaymentDialog';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import axiosClient from '../../api/axiosClient';
+import { formatCurrency, formatDate, maskIdNumber } from '../../utils/formatters';
 
 const MyReservations = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -199,13 +202,18 @@ const MyReservations = () => {
                 </Typography>
             ) : filteredReservations.length === 0 ? (
                 <Paper sx={{ p: 6, textAlign: 'center', borderRadius: '16px' }}>
-                    <HotelOutlinedIcon sx={{ fontSize: 56, color: 'text.secondary', mb: 1 }} />
+                    <HotelOutlinedIcon sx={{ fontSize: 56, color: 'secondary.main', mb: 1.5 }} />
                     <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
                         No Reservations Found
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {statusFilter !== 'all' ? 'No bookings match the selected status filter.' : 'You have not booked any stays yet.'}
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 460, mx: 'auto' }}>
+                        {statusFilter !== 'all'
+                            ? 'No bookings match the selected status filter.'
+                            : 'You have not booked any stays yet. Discover luxury lakefront suites and convention hotels across Rwanda.'}
                     </Typography>
+                    <Button variant="contained" color="primary" onClick={() => navigate('/guest/hotels')}>
+                        Browse Available Hotels
+                    </Button>
                 </Paper>
             ) : (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -242,17 +250,17 @@ const MyReservations = () => {
                                             Room {res.room?.room_number} • {res.room?.roomType?.type_name} • {res.room?.hotel?.location}
                                         </Typography>
                                         <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 700 }}>
-                                            CONFIRMATION #{res.confirmation_code}
+                                            Confirmation: {res.confirmation_code}
                                         </Typography>
                                     </Box>
 
                                     <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
                                         <Typography variant="caption" color="text.secondary">Total Stay Cost</Typography>
                                         <Typography variant="h2" sx={{ fontWeight: 800, fontFamily: 'JetBrains Mono, monospace', color: 'text.primary' }}>
-                                            RWF {Number(res.total_amount).toLocaleString()}
+                                            {formatCurrency(res.total_amount)}
                                         </Typography>
                                         <Typography variant="caption" sx={{ display: 'block', color: balance > 0 ? 'error.main' : 'success.main', fontWeight: 600 }}>
-                                            {balance > 0 ? `Outstanding: RWF ${balance.toLocaleString()}` : '✓ Fully Settled'}
+                                            {balance > 0 ? `Outstanding: ${formatCurrency(balance)}` : '✓ Fully Settled'}
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -262,7 +270,7 @@ const MyReservations = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
                                     <Box>
                                         <Typography variant="body2" color="text.secondary">
-                                            Dates: <strong>{res.check_in}</strong> to <strong>{res.check_out}</strong> ({res.number_of_guests} {res.number_of_guests === 1 ? 'Guest' : 'Guests'})
+                                            Stay Dates: <strong>{formatDate(res.check_in)}</strong> to <strong>{formatDate(res.check_out)}</strong> ({res.number_of_guests} {res.number_of_guests === 1 ? 'Guest' : 'Guests'})
                                         </Typography>
                                     </Box>
 
@@ -292,7 +300,7 @@ const MyReservations = () => {
                                                 onClick={() => setSelectedReservationForPay(res)}
                                                 sx={{ color: '#0F172A', fontWeight: 700 }}
                                             >
-                                                Pay RWF {balance.toLocaleString()}
+                                                Pay {formatCurrency(balance)}
                                             </Button>
                                         )}
 
@@ -341,8 +349,8 @@ const MyReservations = () => {
                         <Typography variant="h3" sx={{ fontWeight: 700 }}>
                             Reservation Details
                         </Typography>
-                        <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 600 }}>
-                            #{selectedReservationForView?.confirmation_code}
+                        <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 700 }}>
+                            Confirmation: {selectedReservationForView?.confirmation_code}
                         </Typography>
                     </Box>
                     <IconButton size="small" onClick={() => setSelectedReservationForView(null)}>
@@ -356,18 +364,18 @@ const MyReservations = () => {
                             {selectedReservationForView?.room?.hotel?.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            Room {selectedReservationForView?.room?.room_number} ({selectedReservationForView?.room?.roomType?.type_name})
+                            Room {selectedReservationForView?.room?.room_number} • {selectedReservationForView?.room?.roomType?.type_name}
                         </Typography>
                     </Box>
 
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">Check-In</Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{selectedReservationForView?.check_in}</Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{formatDate(selectedReservationForView?.check_in)}</Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">Check-Out</Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{selectedReservationForView?.check_out}</Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{formatDate(selectedReservationForView?.check_out)}</Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">Status</Typography>
@@ -381,17 +389,23 @@ const MyReservations = () => {
                                 {selectedReservationForView && <StatusChip status={selectedReservationForView.payment_status} />}
                             </Box>
                         </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="caption" color="text.secondary">Total Stay Cost</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', color: 'primary.main' }}>
+                                {formatCurrency(selectedReservationForView?.total_amount)}
+                            </Typography>
+                        </Grid>
                     </Grid>
 
                     {/* Companion guests */}
                     {selectedReservationForView?.guests?.length > 0 && (
-                        <Box>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                Registered Companion Guests:
+                        <Box sx={{ p: 2, borderRadius: '8px', bgcolor: 'background.paper', border: `1px solid ${theme.palette.divider}` }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+                                Registered Companion Guests ({selectedReservationForView.guests.length}):
                             </Typography>
                             {selectedReservationForView.guests.map((g) => (
-                                <Typography key={g.guest_id} variant="body2" color="text.secondary">
-                                    • {g.full_name} {g.identification_number ? `(${g.identification_number})` : ''}
+                                <Typography key={g.guest_id} variant="body2" color="text.secondary" sx={{ py: 0.25 }}>
+                                    • {g.full_name} {g.identification_number ? `(${maskIdNumber(g.identification_number)})` : ''}
                                 </Typography>
                             ))}
                         </Box>
@@ -482,7 +496,7 @@ const MyReservations = () => {
             <ConfirmDialog
                 open={confirmCancelOpen}
                 title="Cancel Reservation"
-                message={`Are you sure you want to cancel reservation #${reservationToCancel?.confirmation_code}? Any redeemed points will be refunded to your account balance.`}
+                message={`Are you sure you want to cancel reservation ${reservationToCancel?.confirmation_code}? Any redeemed points will be refunded to your account balance.`}
                 confirmText="Cancel Reservation"
                 confirmColor="error"
                 onConfirm={handleCancelReservation}

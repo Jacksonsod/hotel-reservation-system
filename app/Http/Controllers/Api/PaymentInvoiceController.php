@@ -32,7 +32,11 @@ class PaymentInvoiceController extends Controller
         $user = $request->user();
 
         if ($user->role === 'guest') {
-            $payments = Payment::with(['reservation.room.hotel', 'reservation.room.roomType'])
+            $payments = Payment::with([
+                'reservation.room.hotel',
+                'reservation.room.roomType',
+                'reservation.invoice',
+            ])
                 ->whereHas('reservation', function ($rq) use ($user) {
                     $rq->where('user_id', $user->user_id);
                 })

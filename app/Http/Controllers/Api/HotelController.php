@@ -63,7 +63,7 @@ class HotelController extends Controller
             'rooms.roomType',
             'rooms.amenities',
             'services',
-            'reviews.user',
+            'reviews.user:user_id,name',
         ])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')

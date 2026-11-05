@@ -23,6 +23,7 @@ import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import axiosClient from '../../api/axiosClient';
+import { formatCurrency, formatPaymentMethod } from '../../utils/formatters';
 
 const PaymentDialog = ({ open, onClose, reservation, onPaymentSuccess }) => {
     const theme = useTheme();
@@ -104,8 +105,8 @@ const PaymentDialog = ({ open, onClose, reservation, onPaymentSuccess }) => {
                     <Typography variant="h3" sx={{ fontWeight: 700 }}>
                         {successData ? 'Payment Receipt' : 'Record Payment'}
                     </Typography>
-                    <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'text.secondary' }}>
-                        Reservation #{reservation?.confirmation_code}
+                    <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 600 }}>
+                        Confirmation: {reservation?.confirmation_code}
                     </Typography>
                 </Box>
                 <IconButton size="small" onClick={onClose} disabled={loading}>
@@ -125,11 +126,11 @@ const PaymentDialog = ({ open, onClose, reservation, onPaymentSuccess }) => {
                         </Typography>
                         <Box sx={{ p: 2, borderRadius: '10px', bgcolor: 'action.hover', width: '100%', textAlign: 'center' }}>
                             <Typography variant="caption" color="text.secondary">Amount Paid</Typography>
-                            <Typography variant="h2" sx={{ fontWeight: 700, color: 'primary.main', my: 0.5 }}>
-                                RWF {Number(successData.amount).toLocaleString()}
+                            <Typography variant="h2" sx={{ fontWeight: 800, color: 'primary.main', my: 0.5 }}>
+                                {formatCurrency(successData.amount)}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                                Method: {successData.payment_method?.toUpperCase()}
+                                Method: {formatPaymentMethod(successData.payment_method)}
                             </Typography>
                         </Box>
                     </DialogContent>
@@ -157,19 +158,19 @@ const PaymentDialog = ({ open, onClose, reservation, onPaymentSuccess }) => {
                                 <Grid item xs={4}>
                                     <Typography variant="caption" color="text.secondary">Total Cost</Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: 'JetBrains Mono, monospace' }}>
-                                        RWF {totalAmount.toLocaleString()}
+                                        {formatCurrency(totalAmount)}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={4}>
                                     <Typography variant="caption" color="text.secondary">Paid to Date</Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main', fontFamily: 'JetBrains Mono, monospace' }}>
-                                        RWF {paidSoFar.toLocaleString()}
+                                        {formatCurrency(paidSoFar)}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={4}>
                                     <Typography variant="caption" color="text.secondary">Due Balance</Typography>
                                     <Typography variant="body2" sx={{ fontWeight: 700, color: 'error.main', fontFamily: 'JetBrains Mono, monospace' }}>
-                                        RWF {outstandingBalance.toLocaleString()}
+                                        {formatCurrency(outstandingBalance)}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -185,7 +186,7 @@ const PaymentDialog = ({ open, onClose, reservation, onPaymentSuccess }) => {
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">RWF</InputAdornment>,
                             }}
-                            helperText={`Max payable: RWF ${outstandingBalance.toLocaleString()}`}
+                            helperText={`Max payable: ${formatCurrency(outstandingBalance)}`}
                             required
                         />
 
@@ -301,7 +302,7 @@ const PaymentDialog = ({ open, onClose, reservation, onPaymentSuccess }) => {
                             color="primary"
                             disabled={loading || outstandingBalance <= 0}
                         >
-                            {loading ? 'Processing...' : `Pay RWF ${Number(amount || 0).toLocaleString()}`}
+                            {loading ? 'Processing...' : `Pay ${formatCurrency(amount || 0)}`}
                         </Button>
                     </DialogActions>
                 </form>

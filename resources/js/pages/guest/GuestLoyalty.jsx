@@ -3,21 +3,23 @@ import {
     Box,
     Grid,
     Typography,
-    Paper,
     useTheme,
 } from '@mui/material';
 import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
+import { useNavigate } from 'react-router-dom';
 
 import KpiCard from '../../components/common/KpiCard';
 import StatusChip from '../../components/common/StatusChip';
 import DataTableWrapper from '../../components/common/DataTableWrapper';
 import axiosClient from '../../api/axiosClient';
+import { formatCurrency, formatDate } from '../../utils/formatters';
 
 const GuestLoyalty = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [account, setAccount] = useState(null);
     const [transactions, setTransactions] = useState([]);
@@ -66,25 +68,15 @@ const GuestLoyalty = () => {
 
     const columns = [
         {
-            field: 'transaction_id',
-            headerName: 'TX ID',
-            width: 90,
-            renderCell: (params) => (
-                <Typography variant="body2" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'text.secondary' }}>
-                    #{params.row.transaction_id}
-                </Typography>
-            ),
-        },
-        {
             field: 'transaction_type',
-            headerName: 'Type',
-            width: 130,
+            headerName: 'Activity Type',
+            width: 150,
             renderCell: (params) => <StatusChip status={params.row.transaction_type} />,
         },
         {
             field: 'points',
             headerName: 'Points',
-            width: 130,
+            width: 140,
             align: 'right',
             headerAlign: 'right',
             renderCell: (params) => {
@@ -99,41 +91,41 @@ const GuestLoyalty = () => {
                             color: isPositive ? 'success.main' : 'error.main',
                         }}
                     >
-                        {isPositive ? `+${pts}` : pts} pts
+                        {isPositive ? `+${pts.toLocaleString()}` : pts.toLocaleString()} pts
                     </Typography>
                 );
             },
         },
         {
             field: 'description',
-            headerName: 'Description',
+            headerName: 'Activity Description',
             flex: 2,
             minWidth: 260,
             renderCell: (params) => (
-                <Typography variant="body2" color="text.primary">
+                <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
                     {params.row.description}
                 </Typography>
             ),
         },
         {
             field: 'reservation',
-            headerName: 'Booking Code',
-            flex: 1,
-            minWidth: 160,
+            headerName: 'Associated Stay Code',
+            flex: 1.2,
+            minWidth: 170,
             renderCell: (params) => (
-                <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, color: 'primary.main' }}>
+                <Typography variant="body2" sx={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, color: 'primary.main' }}>
                     {params.row.reservation?.confirmation_code || '—'}
                 </Typography>
             ),
         },
         {
             field: 'created_at',
-            headerName: 'Date Recorded',
-            flex: 1,
+            headerName: 'Date & Time',
+            flex: 1.1,
             minWidth: 160,
             renderCell: (params) => (
                 <Typography variant="caption" color="text.secondary">
-                    {params.row.created_at ? new Date(params.row.created_at).toLocaleString() : '—'}
+                    {formatDate(params.row.created_at, true)}
                 </Typography>
             ),
         },
@@ -143,10 +135,17 @@ const GuestLoyalty = () => {
         <Box>
             <DataTableWrapper
                 title="RP Loyalty Club Rewards"
-                subtitle="Earn 1 point for every 1,000 RWF spent on completed stays; redeem anytime for 50 RWF per point discount"
+                subtitle="Earn 1 point for every 1,000 RWF spent on completed stays; redeem anytime for 50 RWF per point instant discount"
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 onResetFilters={() => setSearchQuery('')}
+                emptyState={{
+                    icon: <LoyaltyOutlinedIcon sx={{ fontSize: 52, color: 'secondary.main' }} />,
+                    title: 'No Loyalty Transactions Yet',
+                    subtitle: 'Complete stays across our Rwandan hotels to earn points automatically. 1 point earned per 1,000 RWF spent.',
+                    actionLabel: 'Browse Available Hotels',
+                    onAction: () => navigate('/guest/hotels'),
+                }}
                 kpiContent={
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6} lg={3}>
@@ -154,31 +153,30 @@ const GuestLoyalty = () => {
                                 title="Available Balance"
                                 value={`${available.toLocaleString()} pts`}
                                 icon={<AccountBalanceWalletOutlinedIcon />}
-                                color="primary"
+                                color="secondary"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6} lg={3}>
                             <KpiCard
-                                title="Instant RWF Value"
-                                value={`RWF ${rwfValue.toLocaleString()}`}
-                                subtitle="Applicable on next stay"
-                                icon={<LoyaltyOutlinedIcon />}
-                                color="warning"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} lg={3}>
-                            <KpiCard
-                                title="Lifetime Earned Points"
-                                value={`${totalEarned.toLocaleString()} pts`}
-                                icon={<TrendingUpOutlinedIcon />}
+                                title="Instant Redemption Value"
+                                value={formatCurrency(rwfValue)}
+                                icon={<RedeemOutlinedIcon />}
                                 color="success"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6} lg={3}>
                             <KpiCard
-                                title="Total Points Redeemed"
+                                title="Lifetime Points Earned"
+                                value={`${totalEarned.toLocaleString()} pts`}
+                                icon={<TrendingUpOutlinedIcon />}
+                                color="primary"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6} lg={3}>
+                            <KpiCard
+                                title="Lifetime Points Redeemed"
                                 value={`${totalRedeemed.toLocaleString()} pts`}
-                                icon={<RedeemOutlinedIcon />}
+                                icon={<LoyaltyOutlinedIcon />}
                                 color="info"
                             />
                         </Grid>

@@ -50,7 +50,7 @@ const RootRedirect = () => {
     }
 
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <LandingHotelSearch isPublic />;
     }
 
     return <Navigate to={getRoleHomeRoute(user.role)} replace />;

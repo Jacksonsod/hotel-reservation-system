@@ -4,7 +4,6 @@ import {
     Typography,
     Grid,
     Card,
-    CardContent,
     Button,
     Rating,
     Divider,
@@ -22,12 +21,15 @@ import StarOutlinedIcon from '@mui/icons-material/StarOutlined';
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import HotelOutlinedIcon from '@mui/icons-material/HotelOutlined';
 import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 import KpiCard from '../../components/common/KpiCard';
 import axiosClient from '../../api/axiosClient';
+import { formatDate } from '../../utils/formatters';
 
 const GuestReviews = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [reviews, setReviews] = useState([]);
     const [eligibleStays, setEligibleStays] = useState([]);
@@ -122,7 +124,7 @@ const GuestReviews = () => {
                         title="Average Rating Given"
                         value={`${avgRating} / 5.0`}
                         icon={<StarOutlinedIcon />}
-                        color="warning"
+                        color="secondary"
                     />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -160,7 +162,7 @@ const GuestReviews = () => {
                                         {stay.room?.hotel?.name}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                        Room {stay.room?.room_number} • Checked out on {stay.check_out}
+                                        Room {stay.room?.room_number} ({stay.room?.roomType?.type_name}) • Checked out on {formatDate(stay.check_out)}
                                     </Typography>
                                     <Button
                                         size="small"
@@ -186,12 +188,21 @@ const GuestReviews = () => {
             {loading ? (
                 <Typography variant="body2" color="text.secondary">Loading reviews...</Typography>
             ) : reviews.length === 0 ? (
-                <Paper sx={{ p: 5, textAlign: 'center', borderRadius: '16px' }}>
-                    <RateReviewOutlinedIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                    <Typography variant="h4" sx={{ fontWeight: 600 }}>No Reviews Submitted Yet</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Completed stays will appear here for you to share feedback.
+                <Paper sx={{ p: 6, textAlign: 'center', borderRadius: '16px' }}>
+                    <RateReviewOutlinedIcon sx={{ fontSize: 56, color: 'secondary.main', mb: 1.5 }} />
+                    <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                        No Reviews Submitted Yet
                     </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 440, mx: 'auto' }}>
+                        Once you complete a stay, your eligible bookings will appear here for you to share hospitality feedback.
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => navigate('/guest/hotels')}
+                    >
+                        Browse Available Hotels
+                    </Button>
                 </Paper>
             ) : (
                 <Grid container spacing={2.5}>
@@ -203,8 +214,8 @@ const GuestReviews = () => {
                                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                                             {rev.hotel?.name || 'RP Hotel'}
                                         </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Stay Code: #{rev.reservation?.confirmation_code}
+                                        <Typography variant="caption" sx={{ fontFamily: 'JetBrains Mono, monospace', color: 'primary.main', fontWeight: 700 }}>
+                                            Confirmation: {rev.reservation?.confirmation_code || '—'}
                                         </Typography>
                                     </Box>
                                     <Rating value={rev.rating} readOnly size="small" />
@@ -214,7 +225,7 @@ const GuestReviews = () => {
                                     "{rev.comment}"
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary">
-                                    Posted on {new Date(rev.created_at).toLocaleDateString()}
+                                    Submitted on {formatDate(rev.created_at)}
                                 </Typography>
                             </Card>
                         </Grid>
@@ -236,7 +247,7 @@ const GuestReviews = () => {
                             Review Your Stay
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                            {selectedStay?.room?.hotel?.name} (Room {selectedStay?.room?.room_number})
+                            {selectedStay?.room?.hotel?.name} (Room {selectedStay?.room?.room_number} • {selectedStay?.room?.roomType?.type_name})
                         </Typography>
                     </Box>
                     <IconButton size="small" onClick={() => setReviewDialogOpen(false)} disabled={submitting}>
@@ -248,7 +259,7 @@ const GuestReviews = () => {
                         {error && <Alert severity="error">{error}</Alert>}
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                                Select Rating
+                                Overall Guest Rating
                             </Typography>
                             <Rating
                                 size="large"

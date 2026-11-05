@@ -32,6 +32,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useThemeMode } from '../../context/ThemeModeContext';
 import axiosClient from '../../api/axiosClient';
+import { humanizeStatus, formatDate } from '../../utils/formatters';
 
 const TopHeader = ({ onToggleMobileSidebar }) => {
     const { t, i18n } = useTranslation();
@@ -265,14 +266,19 @@ const TopHeader = ({ onToggleMobileSidebar }) => {
                                     >
                                         <ListItemText
                                             primary={n.title}
-                                            secondary={n.message}
+                                            secondary={
+                                                <Box component="span">
+                                                    <Typography component="span" variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                                        {n.message}
+                                                    </Typography>
+                                                    <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontSize: '0.675rem' }}>
+                                                        {formatDate(n.created_at, true)}
+                                                    </Typography>
+                                                </Box>
+                                            }
                                             primaryTypographyProps={{
                                                 variant: 'body2',
                                                 fontWeight: n.is_read ? 400 : 600,
-                                            }}
-                                            secondaryTypographyProps={{
-                                                variant: 'caption',
-                                                color: 'text.secondary',
                                             }}
                                         />
                                     </ListItem>
@@ -311,7 +317,7 @@ const TopHeader = ({ onToggleMobileSidebar }) => {
                                 {user?.name || 'Guest User'}
                             </Typography>
                             <Chip
-                                label={user?.role?.toUpperCase() || 'GUEST'}
+                                label={humanizeStatus(user?.role || 'guest')}
                                 size="small"
                                 sx={{
                                     height: 18,
